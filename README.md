@@ -17,3 +17,6 @@ https://technicaaadda.blogspot.com/2020/04/code-for-aggrid-integration.html?m=1
 
 
 https://chat.openai.com/share/93461722-25e7-4f88-9daf-fcacd065323f
+
+
+https://chat.openai.com/share/93461722-25e7-4f88-9daf-fcacd065323f
