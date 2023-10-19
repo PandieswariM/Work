@@ -30,3 +30,7 @@ https://chat.openai.com/share/e6c49d0b-b62e-4aa2-a503-6573eccb3adf
 
 
 https://chat.openai.com/share/aa6f21ce-0a05-4040-a93d-946ce6ad85a6
+
+
+
+https://chat.openai.com/share/e5c49263-c50c-42af-b65e-d219b092d5bb
