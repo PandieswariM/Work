@@ -24,3 +24,9 @@ https://chat.openai.com/share/93461722-25e7-4f88-9daf-fcacd065323f
 
 
 https://chat.openai.com/share/e6c49d0b-b62e-4aa2-a503-6573eccb3adf
+
+
+
+
+
+https://chat.openai.com/share/aa6f21ce-0a05-4040-a93d-946ce6ad85a6
