@@ -241,3 +241,70 @@ export class YourComponent {
 }
 
 
+
+..........
+
+// app.component.ts
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  rowData = [
+    { make: 'Toyota', model: 'Celica', price: 35000 },
+    { make: 'Ford', model: 'Mondeo', price: 32000 },
+    { make: 'Porsche', model: 'Boxter', price: 72000 }
+  ];
+
+  columnDefs = [
+    { field: 'make', cellClass: this.getHighlightClass.bind(this) },
+    { field: 'model', cellClass: this.getHighlightClass.bind(this) },
+    { field: 'price', cellClass: this.getHighlightClass.bind(this) }
+  ];
+
+  gridOptions = {
+    rowData: this.rowData,
+    columnDefs: this.columnDefs,
+    onGridReady: (params: any) => {
+      params.api.sizeColumnsToFit();
+    },
+    onFirstDataRendered: (params: any) => {
+      params.api.sizeColumnsToFit();
+    }
+  };
+
+  getHighlightClass(params: any) {
+    const searchText = this.searchText.toLowerCase();
+    if (searchText && params.value.toString().toLowerCase().indexOf(searchText) >= 0) {
+      return 'highlight';
+    }
+    return '';
+  }
+
+  searchText = '';
+
+  onSearchChange() {
+    this.gridOptions.api.setQuickFilter(this.searchText);
+  }
+}
+
+
+
+
+
+
+.....
+
+
+<input type="text" [(ngModel)]="searchText" (input)="onSearchChange()" placeholder="Search...">
+
+<ag-grid-angular
+  style="width: 500px; height: 200px;"
+  class="ag-theme-alpine"
+  [gridOptions]="gridOptions">
+</ag-grid-angular>
+
