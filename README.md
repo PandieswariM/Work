@@ -163,4 +163,81 @@ export class AppComponent {
     [context]="{ searchText: searchText }">
 </ag-grid-angular>
 
+<div>
+  <input [(ngModel)]="searchText" (keyup)="searchValueInGrid()" placeholder="Search...">
+</div>
+<div style="height: 200px;" class="ag-theme-alpine">
+  <ag-grid-angular 
+    style="width: 100%;" 
+    class="ag-theme-alpine"
+    [rowData]="rowData" 
+    [columnDefs]="columnDefs"
+    [defaultColDef]="defaultColDef"
+    (gridReady)="onGridReady($event)">
+  </ag-grid-angular>
+</div>
+
+
+
+
+import { Component } from '@angular/core';
+import { GridApi } from 'ag-grid-community';
+
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css']
+})
+export class YourComponent {
+  private gridApi: GridApi;
+  rowData: any[];
+  searchText: string = '';
+
+  columnDefs = [
+    { headerName: 'Make', field: 'make' },
+    { headerName: 'Model', field: 'model' },
+    { headerName: 'Price', field: 'price' }
+  ];
+
+  defaultColDef = {
+    flex: 1,
+    minWidth: 100,
+    filter: true,
+    sortable: true,
+    floatingFilter: true
+  };
+
+  onGridReady(params: any) {
+    this.gridApi = params.api;
+  }
+
+  searchValueInGrid() {
+    if (this.gridApi && this.searchText !== '') {
+      this.gridApi.setQuickFilter(this.searchText);
+      this.highlightSearchText();
+    } else {
+      this.gridApi.setQuickFilter(null);
+    }
+  }
+
+  highlightSearchText() {
+    const filterInstance = this.gridApi.getFilterInstance('ag-TextColumnFilter');
+    if (filterInstance) {
+      filterInstance.getFrameworkComponentInstance().then((filter: any) => {
+        filter.setParams({ applyButton: true });
+        filter.onFloatingFilterChanged('onEnterKeyPressed');
+      });
+    }
+  }
+
+  ngOnInit() {
+    this.rowData = [
+      { make: 'Toyota', model: 'Celica', price: 35000 },
+      { make: 'Ford', model: 'Mondeo', price: 32000 },
+      { make: 'Porsche', model: 'Boxter', price: 72000 }
+      // Additional data entries here
+    ];
+  }
+}
+
 
