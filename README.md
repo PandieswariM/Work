@@ -102,7 +102,7 @@ export class AppComponent {
 }
 
 
-
+https://chat.openai.com/share/f04da005-b0b5-45c7-81e2-349d5010176f
 
 
 
