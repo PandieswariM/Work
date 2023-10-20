@@ -100,3 +100,49 @@ export class AppComponent {
     this.gridOptions.api.setQuickFilter(this.searchText);
   }
 }
+
+
+
+
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  rowData = [
+    { make: 'Toyota', model: 'Celica', price: 35000 },
+    { make: 'Ford', model: 'Mondeo', price: 32000 },
+    { make: 'Porsche', model: 'Boxter', price: 72000 }
+  ];
+
+  columnDefs = [
+    { field: 'make', cellRenderer: this.customCellRenderer },
+    { field: 'model', cellRenderer: this.customCellRenderer },
+    { field: 'price', cellRenderer: this.customCellRenderer }
+  ];
+
+  gridOptions = {
+    rowData: this.rowData,
+    columnDefs: this.columnDefs
+  };
+
+  onSearchChange(event: any) {
+    const searchText = event.target.value;
+    this.gridOptions.api.setQuickFilter(searchText);
+  }
+
+  customCellRenderer(params: any) {
+    const searchText = params.context.searchText;
+    const cellValue = params.value;
+    if (searchText && cellValue.toLowerCase().includes(searchText.toLowerCase())) {
+      return `<span class="highlight">${cellValue}</span>`;
+    }
+    return cellValue;
+  }
+}
+
