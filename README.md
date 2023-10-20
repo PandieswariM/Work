@@ -146,3 +146,21 @@ export class AppComponent {
   }
 }
 
+
+
+......
+
+
+
+
+
+
+<input type="text" (input)="onSearchChange($event)" placeholder="Search...">
+<ag-grid-angular
+    style="width: 500px; height: 200px;"
+    class="ag-theme-alpine"
+    [gridOptions]="gridOptions"
+    [context]="{ searchText: searchText }">
+</ag-grid-angular>
+
+
