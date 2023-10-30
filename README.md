@@ -308,3 +308,93 @@ export class AppComponent {
   [gridOptions]="gridOptions">
 </ag-grid-angular>
 
+
+
+
+
+
+https://chat.openai.com/share/2863a016-7c0c-4c90-b911-46700e3f52ed
+
+
+https://chat.openai.com/share/5867ac8b-242b-4c86-9749-87770fd4c37f
+
+
+// employee.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-employee',
+  templateUrl: './employee.component.html',
+  styleUrls: ['./employee.component.css']
+})
+export class EmployeeComponent {
+  searchValue: string = '';
+  rowData: any[] = []; // Replace with your employee data array
+
+  columnDefs = [
+    { headerName: 'Employee ID', field: 'employeeId' },
+    { headerName: 'Name', field: 'name', cellRenderer: 'customCellRenderer' },
+    // Add other column definitions as needed
+  ];
+
+  frameworkComponents = {
+    customCellRenderer: CustomCellRendererComponent,
+  };
+
+  onSearchInputChange(event: Event) {
+    this.searchValue = (event.target as HTMLInputElement).value;
+  }
+}
+
+
+
+
+
+
+
+,....
+
+
+// custom-cell-renderer.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-custom-cell-renderer',
+  template: `
+    <span [innerHTML]="highlightSearchedText(params.value, params.context.searchValue)"></span>
+  `,
+})
+export class CustomCellRendererComponent {
+  params: any;
+
+  agInit(params: any): void {
+    this.params = params;
+  }
+
+  highlightSearchedText(cellValue: string, searchValue: string): string {
+    if (!searchValue || searchValue === '') {
+      return cellValue;
+    }
+
+    const regEx = new RegExp(searchValue, 'gi');
+    return cellValue.replace(regEx, match => `<span style="color: red">${match}</span>`);
+  }
+}
+
+
+
+......
+
+<!-- employee.component.html -->
+<div>
+  <input type="text" placeholder="Search employees" (input)="onSearchInputChange($event)">
+</div>
+
+<ag-grid-angular
+  style="width: 100%; height: 500px;"
+  class="ag-theme-alpine"
+  [rowData]="rowData"
+  [columnDefs]="columnDefs"
+  [frameworkComponents]="frameworkComponents"
+  [context]="{ searchValue: searchValue }"
+></ag-grid-angular>
