@@ -347,6 +347,49 @@ export class EmployeeComponent {
 }
 
 
+.....
+
+// YourComponent.ts
+
+// Import necessary modules
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css']
+})
+export class YourComponent {
+  rowData: any[]; // Your data to be displayed in the Ag-Grid
+  searchValue: string = '';
+
+  columnDefs = [
+    {
+      headerName: 'Your Column',
+      field: 'yourField',
+      cellRenderer: (params: any) => {
+        const cellValue: string = params.value;
+        const searchText: string = this.searchValue;
+
+        if (cellValue.toLowerCase().includes(searchText.toLowerCase())) {
+          const parts = cellValue.split(new RegExp(`(${searchText})`, 'gi'));
+          return parts.map(part => part.toLowerCase() === searchText.toLowerCase() ? `<span style="color: red">${part}</span>` : part).join('');
+        } else {
+          return cellValue;
+        }
+      }
+    }
+    // Add other column definitions here as needed
+  ];
+
+  // Your other component code here
+}
+
+
+
+....
+
+
 
 
 
@@ -398,3 +441,6 @@ export class CustomCellRendererComponent {
   [frameworkComponents]="frameworkComponents"
   [context]="{ searchValue: searchValue }"
 ></ag-grid-angular>
+
+
+https://chat.openai.com/share/f5d6a5de-6adb-46a0-8b3b-fb06f5eb237c
