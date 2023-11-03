@@ -459,3 +459,9 @@ https://chat.openai.com/share/6c735fbc-dbec-4ffc-aa92-be5614ec2c92
 
 
 https://chat.openai.com/share/14d47cfd-31be-4934-bf81-5c9541f8ac87
+
+
+
+
+Leave Request for Sister's Marriage
+Content: Kindly grant me leave from [date] to [date] as I will be attending my sister's wedding. Thank you.
