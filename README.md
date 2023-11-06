@@ -3,6 +3,23 @@
 https://chat.openai.com/share/2087e25a-e0db-4bf9-826e-b8f12dc94a85
 https://chat.openai.com/share/056eb131-8ddf-4be1-a292-763ba9542761
 
+
+
+accessCellValues() {
+  if (this.agGrid.api) {
+    this.agGrid.api.forEachNode((node) => {
+      const rowData = node.data;
+      // Access cell values for multiple columns
+      const columnNames = ['columnFieldName1', 'columnFieldName2', 'columnFieldName3']; // Add all your column field names here
+      columnNames.forEach((columnName) => {
+        const cellValue = rowData[columnName];
+        console.log(cellValue);
+      });
+    });
+  }
+}
+
+
 Ng g s service 
 ng g guard auth
 https://ujjwaltechnicaltips.blogspot.com/2020/01/angular-route-guards-activate-route.html?m=1
