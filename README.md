@@ -1,7 +1,7 @@
 # Work
 
 https://chat.openai.com/share/2087e25a-e0db-4bf9-826e-b8f12dc94a85
-
+https://chat.openai.com/share/056eb131-8ddf-4be1-a292-763ba9542761
 
 Ng g s service 
 ng g guard auth
