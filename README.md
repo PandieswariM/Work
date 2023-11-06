@@ -1,5 +1,8 @@
 # Work
 
+https://chat.openai.com/share/2087e25a-e0db-4bf9-826e-b8f12dc94a85
+
+
 Ng g s service 
 ng g guard auth
 https://ujjwaltechnicaltips.blogspot.com/2020/01/angular-route-guards-activate-route.html?m=1
