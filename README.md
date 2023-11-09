@@ -1,5 +1,10 @@
 # Work
 
+
+https://chat.openai.com/share/0ae1c26d-d88e-4ace-bd74-7680d10fd6ce
+
+
+
 https://chat.openai.com/share/c574a8ec-3306-4992-bd89-947f816ac0f2
 
 https://chat.openai.com/share/568de024-7982-4653-b699-c20c72400a2a
