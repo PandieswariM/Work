@@ -1,4 +1,4 @@
-<!-- your.component.html -->
+ji<!-- your.component.html -->
 <div>
   <label for="designationFilter">Designation:</label>
   <select id="designationFilter" [(ngModel)]="designationFilter" (change)="externalFilterChanged()">
@@ -88,3 +88,54 @@ export class YourComponent {
     // Your data here
   ];
 }
+.,.
+
+
+
+const dateFilterParams = {
+      greaterThanOrEqual: this.fromDate,
+      lessThanOrEqual: this.toDate,
+      filterType: 'date',
+    };
+
+
+
+
+// YourComponent.ts
+
+import { Component } from '@angular/core';
+import { GridOptions } from 'ag-grid-community';
+
+@Component({
+  // component details...
+})
+export class YourComponent {
+  gridOptions: GridOptions;
+  rowData: any[]; // Your data array
+  fromDate: Date;
+  toDate: Date;
+
+  // Set up grid options, columns, and other configurations...
+
+  onGridReady(params) {
+    // Initialize grid options, set data, etc.
+    this.gridOptions = params.api;
+    this.gridOptions.setRowData(this.rowData);
+  }
+
+  filterByDateRange() {
+    const dateFilterParams = {
+      greaterThanOrEqual: this.fromDate,
+      lessThanOrEqual: this.toDate,
+      filterType: 'date',
+    };
+
+    this.gridOptions.setFilterModel({
+      dob: dateFilterParams,
+    });
+    this.gridOptions.onFilterChanged();
+  }
+}
+
+
+
