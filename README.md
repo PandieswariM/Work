@@ -22,6 +22,8 @@
   [doesExternalFilterPass]="doesExternalFilterPass"
 >
 </ag-grid-angular>
+
+
 ..,.
 
 
@@ -51,6 +53,8 @@ export class YourComponent {
     );
   }
 }
+
+
 ....
 
 // your.component.ts
