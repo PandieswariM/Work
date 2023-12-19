@@ -44,3 +44,31 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+
+
+.......
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetEmployeeData(
+    IN p_designationrecid INT,
+    IN p_gender VARCHAR(255),
+    IN p_active INT,
+    IN p_startdate DATE,
+    IN p_enddate DATE
+)
+BEGIN
+    SELECT *
+    FROM your_table_name
+    WHERE
+        (IFNULL(p_designationrecid, designationrecid) = designationrecid)
+        AND (IFNULL(p_gender, gender) = gender)
+        AND (IFNULL(p_active, active) = active)
+        AND (IFNULL(p_startdate, doj) <= doj AND IFNULL(p_enddate, doj) >= doj);
+END //
+
+DELIMITER ;
