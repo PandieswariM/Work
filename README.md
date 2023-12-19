@@ -253,4 +253,70 @@ END //
 
 DELIMITER ;
 
+.......
+
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetEmployeeData(
+    IN p_designationrecid INT,
+    IN p_gender VARCHAR(255),
+    IN p_active INT,
+    IN p_startdate DATE,
+    IN p_enddate DATE,
+    IN p_sorting VARCHAR(50)
+)
+BEGIN
+    DECLARE sQuery VARCHAR(5000) DEFAULT '';
+    DECLARE sWhereCondition VARCHAR(1000) DEFAULT '';
+    DECLARE sSortingQuery VARCHAR(500) DEFAULT '';
+
+    -- Create dynamic WHERE condition
+    SET sWhereCondition = CONCAT(
+        ' AND designationrecid = IFNULL(', p_designationrecid, ', designationrecid)',
+        ' AND gender = IFNULL("', p_gender, '", gender)',
+        ' AND active = IFNULL(', p_active, ', active)',
+        ' AND doj BETWEEN IFNULL("', p_startdate, '", doj) AND IFNULL("', p_enddate, '", doj)'
+    );
+
+    -- Create dynamic sorting condition
+    SET sSortingQuery = CONCAT('ORDER BY ', p_sorting);
+
+    -- Create the complete dynamic query
+    SET sQuery = CONCAT('
+        SELECT
+            EA.EmployeeRecId AS EmployeeRecId,
+            EA.EmpId AS Employeeid,
+            EA.EmpName AS Employeename,
+            D.Designation AS Designation,
+            BG.BloodGroup AS Bloodgroup,
+            EA.Age AS Age,
+            DATE_FORMAT(EA.Dob, "%d/%m/%Y") AS Dob,
+            EA.Gender AS Gender,
+            EA.EmailId AS Emailid,
+            EA.MobileNo AS Mobilenumber,
+            DATE_FORMAT(EA.JoiningDate, "%d/%m/%Y") AS Dateofjoining,
+            IF(EA.IsActive = 1, "Yes", "No") AS Active,
+            EA.IsDeleted AS IsDeleted,
+            EA.NoOfLeave AS Noofleave,
+            EA.Address AS Address
+        FROM
+            EA_Employee AS EA
+            LEFT JOIN EA_Designation AS D ON EA.DesignationRecId = D.DesignationRecId
+            LEFT JOIN EA_BloodGroup AS BG ON EA.BloodGroupRecId = BG.BloodGroupRecId
+        WHERE 1 ', sWhereCondition, '
+    ', IFNULL(sSortingQuery, ''));
+
+    -- Execute the dynamic query
+    PREPARE stmt FROM sQuery;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+
+DELIMITER ;
+
+
 
