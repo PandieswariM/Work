@@ -75,3 +75,7 @@ export class DateRangeDropdownComponent {
 
 ALTER TABLE ea_employee
 MODIFY COLUMN noofleave DECIMAL(10,2);
+
+
+ALTER TABLE ea_employee
+MODIFY COLUMN noofleave FLOAT;
