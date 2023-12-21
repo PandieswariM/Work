@@ -1,322 +1,71 @@
-koDELIMITER //
+import { Component } from '@angular/core';
 
-CREATE PROCEDURE GetEmployeeData(
-    IN p_designationrecid INT,
-    IN p_gender VARCHAR(255),
-    IN p_active INT,
-    IN p_startdate DATE,
-    IN p_enddate DATE,
-    IN sSorting VARCHAR(50)
-)
-BEGIN
-    DECLARE sSortingQuery VARCHAR(500) DEFAULT '';
+enum DateRange {
+  Today = 'today',
+  ThisWeek = 'thisWeek',
+  ThisMonth = 'thisMonth',
+  ThisYear = 'thisYear',
+}
 
-    SET sSortingQuery = CONCAT('ORDER BY ', sSorting, '');
+interface DateRangeOption {
+  label: string;
+  value: DateRange;
+  getDateRange: () => { startDate: Date; endDate: Date };
+}
 
-    SET @sQuery = CONCAT('SELECT
-        EA.EmployeeRecId                        AS EmployeeRecId,
-        EA.EmpId                                AS Employeeid,
-        EA.EmpName                              AS Employeename,
-        D.Designation                           AS Designation,
-        BG.BloodGroup                           AS Bloodgroup,
-        EA.Age                                  AS Age,
-        DATE_FORMAT(EA.Dob, "%d/%m/%Y")         AS Dob,
-        EA.Gender                               AS Gender,
-        EA.EmailId                              AS Emailid,
-        EA.MobileNo                             AS Mobilenumber,
-        DATE_FORMAT(EA.JoiningDate, "%d/%m/%Y") AS Dateofjoining,
-        IF(EA.IsActive = 1, ''Yes'', ''No'')    AS Active,
-        EA.IsDeleted                            AS IsDeleted,
-        EA.NoOfLeave                            AS Noofleave,
-        EA.Address                              AS Address
-    FROM
-        EA_Employee                 AS EA
-        LEFT JOIN EA_Designation    AS D  ON EA.DesignationRecId = D.DesignationRecId
-        LEFT JOIN EA_BloodGroup     AS BG ON EA.BloodGroupRecId = BG.BloodGroupRecId
-        WHERE
-            (IFNULL(p_designationrecid, EA.DesignationRecId) = EA.DesignationRecId)
-            AND (IFNULL(p_gender, EA.Gender) = EA.Gender)
-            AND (IFNULL(p_active, EA.IsActive) = EA.IsActive)
-            AND (IFNULL(p_startdate, EA.JoiningDate) <= EA.JoiningDate AND IFNULL(p_enddate, EA.JoiningDate) >= EA.JoiningDate)
-        ', IFNULL(sSortingQuery, ''));
+@Component({
+  selector: 'app-date-range-dropdown',
+  template: `
+    <label for="dateRange">Select Date Range:</label>
+    <select id="dateRange" [(ngModel)]="selectedRange">
+      <option *ngFor="let option of dateRangeOptions" [value]="option.value">{{ option.label }}</option>
+    </select>
 
-    PREPARE stmt FROM @sQuery;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
+    <div *ngIf="selectedRange">
+      <p>Start Date: {{ selectedOption.startDate | date:'mediumDate' }}</p>
+      <p>End Date: {{ selectedOption.endDate | date:'mediumDate' }}</p>
+    </div>
+  `,
+})
+export class DateRangeDropdownComponent {
+  selectedRange: DateRange;
+  
+  dateRangeOptions: DateRangeOption[] = [
+    { label: 'Today', value: DateRange.Today, getDateRange: this.getTodayRange.bind(this) },
+    { label: 'This Week', value: DateRange.ThisWeek, getDateRange: this.getWeekRange.bind(this) },
+    { label: 'This Month', value: DateRange.ThisMonth, getDateRange: this.getMonthRange.bind(this) },
+    { label: 'This Year', value: DateRange.ThisYear, getDateRange: this.getYearRange.bind(this) },
+  ];
 
-DELIMITER ;
+  getTodayRange(): { startDate: Date; endDate: Date } {
+    const today = new Date();
+    return { startDate: today, endDate: today };
+  }
 
+  getWeekRange(): { startDate: Date; endDate: Date } {
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - today.getDay());
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+    return { startDate, endDate };
+  }
 
-DELIMITER //
+  getMonthRange(): { startDate: Date; endDate: Date } {
+    const today = new Date();
+    const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    return { startDate, endDate };
+  }
 
-CREATE PROCEDURE GetEmployeeData(
-    IN p_designationrecid INT,
-    IN p_gender VARCHAR(255),
-    IN p_active INT,
-    IN p_startdate DATE,
-    IN p_enddate DATE,
-    IN p_sorting VARCHAR(50)
-)
-BEGIN
-    DECLARE sQuery VARCHAR(5000) DEFAULT '';
-    DECLARE sSortingQuery VARCHAR(500) DEFAULT '';
+  getYearRange(): { startDate: Date; endDate: Date } {
+    const today = new Date();
+    const startDate = new Date(today.getFullYear(), 0, 1);
+    const endDate = new Date(today.getFullYear(), 11, 31);
+    return { startDate, endDate };
+  }
 
-    SET sSortingQuery = CONCAT('ORDER BY ', p_sorting, '');
-
-    SET sQuery = CONCAT('
-        SELECT
-            EA.EmployeeRecId AS EmployeeRecId,
-            EA.EmpId AS Employeeid,
-            EA.EmpName AS Employeename,
-            D.Designation AS Designation,
-            BG.BloodGroup AS Bloodgroup,
-            EA.Age AS Age,
-            DATE_FORMAT(EA.Dob, "%d/%m/%Y") AS Dob,
-            EA.Gender AS Gender,
-            EA.EmailId AS Emailid,
-            EA.MobileNo AS Mobilenumber,
-            DATE_FORMAT(EA.JoiningDate, "%d/%m/%Y") AS Dateofjoining,
-            IF(EA.IsActive = 1, "Yes", "No") AS Active,
-            EA.IsDeleted AS IsDeleted,
-            EA.NoOfLeave AS Noofleave,
-            EA.Address AS Address
-        FROM
-            EA_Employee AS EA
-            LEFT JOIN EA_Designation AS D ON EA.DesignationRecId = D.DesignationRecId
-            LEFT JOIN EA_BloodGroup AS BG ON EA.BloodGroupRecId = BG.BloodGroupRecId
-        WHERE
-            (IFNULL(', IFNULL(p_designationrecid, 'NULL'), ', designationrecid) = designationrecid)
-            AND (IFNULL(', IFNULL(p_gender, 'NULL'), ', gender) = gender)
-            AND (IFNULL(', IFNULL(p_active, 'NULL'), ', active) = active)
-            AND (IFNULL(', IFNULL(p_startdate, 'NULL'), ', doj) <= doj AND IFNULL(', IFNULL(p_enddate, 'NULL'), ', doj) >= doj
-    ', IFNULL(sSortingQuery, ''));
-
-    PREPARE stmt FROM sQuery;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
-
-DELIMITER ;
-
-
-
-
-
-
-
-
-DELIMITER //
-
-CREATE PROCEDURE GetEmployeeData(
-    IN p_designationrecid INT,
-    IN p_gender VARCHAR(255),
-    IN p_active INT,
-    IN p_startdate DATE,
-    IN p_enddate DATE,
-    IN p_sorting VARCHAR(50)
-)
-BEGIN
-    DECLARE sQuery VARCHAR(5000) DEFAULT '';
-    DECLARE sWhereCondition VARCHAR(1000) DEFAULT '';
-    DECLARE sSortingQuery VARCHAR(500) DEFAULT '';
-
-    -- Create dynamic WHERE condition
-    IF p_designationrecid IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND designationrecid = ', p_designationrecid);
-    END IF;
-
-    IF p_gender IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND gender = "', p_gender, '"');
-    END IF;
-
-    IF p_active IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND active = ', p_active);
-    END IF;
-
-    IF p_startdate IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND doj >= "', p_startdate, '"');
-    END IF;
-
-    IF p_enddate IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND doj <= "', p_enddate, '"');
-    END IF;
-
-    -- Create dynamic sorting condition
-    SET sSortingQuery = CONCAT('ORDER BY ', p_sorting);
-
-    -- Create the complete dynamic query
-    SET sQuery = CONCAT('
-        SELECT
-            EA.EmployeeRecId AS EmployeeRecId,
-            EA.EmpId AS Employeeid,
-            EA.EmpName AS Employeename,
-            D.Designation AS Designation,
-            BG.BloodGroup AS Bloodgroup,
-            EA.Age AS Age,
-            DATE_FORMAT(EA.Dob, "%d/%m/%Y") AS Dob,
-            EA.Gender AS Gender,
-            EA.EmailId AS Emailid,
-            EA.MobileNo AS Mobilenumber,
-            DATE_FORMAT(EA.JoiningDate, "%d/%m/%Y") AS Dateofjoining,
-            IF(EA.IsActive = 1, "Yes", "No") AS Active,
-            EA.IsDeleted AS IsDeleted,
-            EA.NoOfLeave AS Noofleave,
-            EA.Address AS Address
-        FROM
-            EA_Employee AS EA
-            LEFT JOIN EA_Designation AS D ON EA.DesignationRecId = D.DesignationRecId
-            LEFT JOIN EA_BloodGroup AS BG ON EA.BloodGroupRecId = BG.BloodGroupRecId
-        WHERE 1 ', sWhereCondition, '
-    ', IFNULL(sSortingQuery, ''));
-
-    -- Execute the dynamic query
-    PREPARE stmt FROM sQuery;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
-
-DELIMITER ;
-
-
-
-
-DELIMITER //
-
-CREATE PROCEDURE GetEmployeeData(
-    IN p_designationrecid INT,
-    IN p_gender VARCHAR(255),
-    IN p_active INT,
-    IN p_startdate DATE,
-    IN p_enddate DATE,
-    IN p_sorting VARCHAR(50)
-)
-BEGIN
-    DECLARE sQuery VARCHAR(5000) DEFAULT '';
-    DECLARE sWhereCondition VARCHAR(1000) DEFAULT '';
-    DECLARE sSortingQuery VARCHAR(500) DEFAULT '';
-
-    -- Create dynamic WHERE condition
-    IF p_designationrecid IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND designationrecid = ', p_designationrecid);
-    END IF;
-
-    IF p_gender IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND gender = "', p_gender, '"');
-    END IF;
-
-    IF p_active IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND active = ', p_active);
-    END IF;
-
-    IF p_startdate IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND doj >= "', p_startdate, '"');
-    END IF;
-
-    IF p_enddate IS NOT NULL THEN
-        SET sWhereCondition = CONCAT(sWhereCondition, ' AND doj <= "', p_enddate, '"');
-    END IF;
-
-    -- Create dynamic sorting condition
-    SET sSortingQuery = CONCAT('ORDER BY ', p_sorting);
-
-    -- Create the complete dynamic query
-    SET sQuery = CONCAT('
-        SELECT
-            EA.EmployeeRecId AS EmployeeRecId,
-            EA.EmpId AS Employeeid,
-            EA.EmpName AS Employeename,
-            D.Designation AS Designation,
-            BG.BloodGroup AS Bloodgroup,
-            EA.Age AS Age,
-            DATE_FORMAT(EA.Dob, "%d/%m/%Y") AS Dob,
-            EA.Gender AS Gender,
-            EA.EmailId AS Emailid,
-            EA.MobileNo AS Mobilenumber,
-            DATE_FORMAT(EA.JoiningDate, "%d/%m/%Y") AS Dateofjoining,
-            IF(EA.IsActive = 1, "Yes", "No") AS Active,
-            EA.IsDeleted AS IsDeleted,
-            EA.NoOfLeave AS Noofleave,
-            EA.Address AS Address
-        FROM
-            EA_Employee AS EA
-            LEFT JOIN EA_Designation AS D ON EA.DesignationRecId = D.DesignationRecId
-            LEFT JOIN EA_BloodGroup AS BG ON EA.BloodGroupRecId = BG.BloodGroupRecId
-        WHERE 1 ', sWhereCondition, '
-    ', IFNULL(sSortingQuery, ''));
-
-    -- Execute the dynamic query
-    PREPARE stmt FROM sQuery;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
-
-DELIMITER ;
-
-.......
-
-
-
-
-
-DELIMITER //
-
-CREATE PROCEDURE GetEmployeeData(
-    IN p_designationrecid INT,
-    IN p_gender VARCHAR(255),
-    IN p_active INT,
-    IN p_startdate DATE,
-    IN p_enddate DATE,
-    IN p_sorting VARCHAR(50)
-)
-BEGIN
-    DECLARE sQuery VARCHAR(5000) DEFAULT '';
-    DECLARE sWhereCondition VARCHAR(1000) DEFAULT '';
-    DECLARE sSortingQuery VARCHAR(500) DEFAULT '';
-
-    -- Create dynamic WHERE condition
-    SET sWhereCondition = CONCAT(
-        ' AND designationrecid = IFNULL(', p_designationrecid, ', designationrecid)',
-        ' AND gender = IFNULL("', p_gender, '", gender)',
-        ' AND active = IFNULL(', p_active, ', active)',
-        ' AND doj BETWEEN IFNULL("', p_startdate, '", doj) AND IFNULL("', p_enddate, '", doj)'
-    );
-
-    -- Create dynamic sorting condition
-    SET sSortingQuery = CONCAT('ORDER BY ', p_sorting);
-
-    -- Create the complete dynamic query
-    SET sQuery = CONCAT('
-        SELECT
-            EA.EmployeeRecId AS EmployeeRecId,
-            EA.EmpId AS Employeeid,
-            EA.EmpName AS Employeename,
-            D.Designation AS Designation,
-            BG.BloodGroup AS Bloodgroup,
-            EA.Age AS Age,
-            DATE_FORMAT(EA.Dob, "%d/%m/%Y") AS Dob,
-            EA.Gender AS Gender,
-            EA.EmailId AS Emailid,
-            EA.MobileNo AS Mobilenumber,
-            DATE_FORMAT(EA.JoiningDate, "%d/%m/%Y") AS Dateofjoining,
-            IF(EA.IsActive = 1, "Yes", "No") AS Active,
-            EA.IsDeleted AS IsDeleted,
-            EA.NoOfLeave AS Noofleave,
-            EA.Address AS Address
-        FROM
-            EA_Employee AS EA
-            LEFT JOIN EA_Designation AS D ON EA.DesignationRecId = D.DesignationRecId
-            LEFT JOIN EA_BloodGroup AS BG ON EA.BloodGroupRecId = BG.BloodGroupRecId
-        WHERE 1 ', sWhereCondition, '
-    ', IFNULL(sSortingQuery, ''));
-
-    -- Execute the dynamic query
-    PREPARE stmt FROM sQuery;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
-
-DELIMITER ;
-
-
-
+  get selectedOption(): DateRangeOption {
+    return this.dateRangeOptions.find(option => option.value === this.selectedRange);
+  }
+}
