@@ -79,3 +79,15 @@ MODIFY COLUMN noofleave DECIMAL(10,2);
 
 ALTER TABLE ea_employee
 MODIFY COLUMN noofleave FLOAT;
+
+
+
+{headerName: 'Apply leave?', field: 'Applyleave', width: 200, tooltipField: 'Applyleave', headerTooltip: 'Apply leave?', cellClass: 'scGridCellTextCenter', sortable: false, cellRenderer: 'applyLeaveCellRenderer', onCellClicked: onApplyLeaveClick}
+
+
+
+onApplyLeaveClick(params: any): void {
+    // Handle the click event here
+    console.log('Button clicked!', params);
+    // Add your logic for updating or performing actions related to applying leave
+}
