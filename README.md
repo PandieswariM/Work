@@ -69,3 +69,9 @@ export class DateRangeDropdownComponent {
     return this.dateRangeOptions.find(option => option.value === this.selectedRange);
   }
 }
+
+
+..,...
+
+ALTER TABLE ea_employee
+MODIFY COLUMN noofleave DECIMAL(10,2);
