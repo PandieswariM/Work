@@ -1,93 +1,43 @@
 import { Component } from '@angular/core';
 
-enum DateRange {
-  Today = 'today',
-  ThisWeek = 'thisWeek',
-  ThisMonth = 'thisMonth',
-  ThisYear = 'thisYear',
-}
-
-interface DateRangeOption {
-  label: string;
-  value: DateRange;
-  getDateRange: () => { startDate: Date; endDate: Date };
-}
-
 @Component({
-  selector: 'app-date-range-dropdown',
-  template: `
-    <label for="dateRange">Select Date Range:</label>
-    <select id="dateRange" [(ngModel)]="selectedRange">
-      <option *ngFor="let option of dateRangeOptions" [value]="option.value">{{ option.label }}</option>
-    </select>
-
-    <div *ngIf="selectedRange">
-      <p>Start Date: {{ selectedOption.startDate | date:'mediumDate' }}</p>
-      <p>End Date: {{ selectedOption.endDate | date:'mediumDate' }}</p>
-    </div>
-  `,
+  selector: 'app-date-range-picker',
+  templateUrl: './date-range-picker.component.html',
+  styleUrls: ['./date-range-picker.component.css']
 })
-export class DateRangeDropdownComponent {
-  selectedRange: DateRange;
-  
-  dateRangeOptions: DateRangeOption[] = [
-    { label: 'Today', value: DateRange.Today, getDateRange: this.getTodayRange.bind(this) },
-    { label: 'This Week', value: DateRange.ThisWeek, getDateRange: this.getWeekRange.bind(this) },
-    { label: 'This Month', value: DateRange.ThisMonth, getDateRange: this.getMonthRange.bind(this) },
-    { label: 'This Year', value: DateRange.ThisYear, getDateRange: this.getYearRange.bind(this) },
-  ];
+export class DateRangePickerComponent {
+  fromDate: Date;
+  toDate: Date;
 
-  getTodayRange(): { startDate: Date; endDate: Date } {
-    const today = new Date();
-    return { startDate: today, endDate: today };
+  onFromDateChange(event: any) {
+    this.toDate = new Date(event);
   }
 
-  getWeekRange(): { startDate: Date; endDate: Date } {
-    const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - today.getDay());
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-    return { startDate, endDate };
-  }
-
-  getMonthRange(): { startDate: Date; endDate: Date } {
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    return { startDate, endDate };
-  }
-
-  getYearRange(): { startDate: Date; endDate: Date } {
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), 0, 1);
-    const endDate = new Date(today.getFullYear(), 11, 31);
-    return { startDate, endDate };
-  }
-
-  get selectedOption(): DateRangeOption {
-    return this.dateRangeOptions.find(option => option.value === this.selectedRange);
+  onToDateChange(event: any) {
+    this.fromDate = new Date(event);
   }
 }
 
 
-..,...
-
-ALTER TABLE ea_employee
-MODIFY COLUMN noofleave DECIMAL(10,2);
 
 
-ALTER TABLE ea_employee
-MODIFY COLUMN noofleave FLOAT;
+<div>
+  <label for="fromDate">From Date:</label>
+  <input
+    id="fromDate"
+    ngxDaterangepickerMd
+    [(ngModel)]="fromDate"
+    (ngModelChange)="onFromDateChange($event)"
+  />
+</div>
 
-
-
-{headerName: 'Apply leave?', field: 'Applyleave', width: 200, tooltipField: 'Applyleave', headerTooltip: 'Apply leave?', cellClass: 'scGridCellTextCenter', sortable: false, cellRenderer: 'applyLeaveCellRenderer', onCellClicked: onApplyLeaveClick}
-
-
-
-onApplyLeaveClick(params: any): void {
-    // Handle the click event here
-    console.log('Button clicked!', params);
-    // Add your logic for updating or performing actions related to applying leave
-}
+<div>
+  <label for="toDate">To Date:</label>
+  <input
+    id="toDate"
+    ngxDaterangepickerMd
+    [(ngModel)]="toDate"
+    (ngModelChange)="onToDateChange($event)"
+    [minDate]="fromDate"
+  />
+</div>
