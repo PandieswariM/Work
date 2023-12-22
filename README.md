@@ -41,3 +41,26 @@ export class DateRangePickerComponent {
     [minDate]="fromDate"
   />
 </div>
+
+
+
+
+-- Modify the procedure to get total leave for all employees
+DELIMITER //
+
+CREATE PROCEDURE GetAllEmployeesTotalLeave()
+BEGIN
+    SELECT 
+        e.employeeid,
+        e.name,
+        e.address,
+        COALESCE(SUM(CASE WHEN lt.leavetype = 'CL' THEN ll.noofleave ELSE 0 END), 0) as CLTotalLeave,
+        COALESCE(SUM(CASE WHEN lt.leavetype = 'LOP' THEN ll.noofleave ELSE 0 END), 0) as LOPTotalLeave,
+        COALESCE(SUM(ll.noofleave), 0) as TotalNoOfLeave
+    FROM employee e
+    LEFT JOIN leave_log ll ON e.employeeid = ll.employeeid
+    LEFT JOIN leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
+    GROUP BY e.employeeid, e.name, e.address;
+END //
+
+DELIMITER ;
