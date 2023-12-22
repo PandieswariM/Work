@@ -86,3 +86,37 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+...,.
+
+-- Modify the procedure to get total leave for all employees without using GROUP BY
+DELIMITER //
+
+CREATE PROCEDURE GetAllEmployeesTotalLeave()
+BEGIN
+    SET SESSION group_concat_max_len = 1000000; -- Set a sufficient length for GROUP_CONCAT
+
+    -- Build the dynamic SQL query
+    SET @sql = CONCAT('
+        SELECT 
+            e.employeeid,
+            e.name,
+            e.address,
+            CASE WHEN lt.leavetype = ''CL'' THEN ll.noofleave ELSE 0 END as CLTotalLeave,
+            CASE WHEN lt.leavetype = ''LOP'' THEN ll.noofleave ELSE 0 END as LOPTotalLeave,
+            ll.noofleave as TotalNoOfLeave
+        FROM employee e
+        LEFT JOIN leave_log ll ON e.employeeid = ll.employeeid
+        LEFT JOIN leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
+    ');
+
+    -- Execute the dynamic SQL query
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+
+DELIMITER ;
+
+
