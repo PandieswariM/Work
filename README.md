@@ -18,6 +18,28 @@ export class DateRangePickerComponent {
   }
 }
 
+..,
+<div>
+  <label for="fromDate">From Date:</label>
+  <input
+    id="fromDate"
+    ngxDaterangepickerMd
+    [(ngModel)]="fromDate"
+    (ngModelChange)="onFromDateChange($event)"
+  />
+</div>
+
+<div>
+  <label for="toDate">To Date:</label>
+  <input
+    id="toDate"
+    ngxDaterangepickerMd
+    [(ngModel)]="toDate"
+    (ngModelChange)="onToDateChange($event)"
+    [minDate]="fromDate"
+  />
+</div>
+
 
 
 
