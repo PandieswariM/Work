@@ -1,146 +1,71 @@
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-date-range-picker',
-  templateUrl: './date-range-picker.component.html',
-  styleUrls: ['./date-range-picker.component.css']
-})
-export class DateRangePickerComponent {
-  fromDate: Date;
-  toDate: Date;
-
-  onFromDateChange(event: any) {
-    this.toDate = new Date(event);
-  }
-
-  onToDateChange(event: any) {
-    this.fromDate = new Date(event);
-  }
-}
-
-..,
+....
 
 
+-- Create leavetype table
+CREATE TABLE leavetype (
+    leavetyperecid INT PRIMARY KEY,
+    leavetype VARCHAR(50) NOT NULL
+);
 
+-- Insert data into leavetype table
+INSERT INTO leavetype (leavetyperecid, leavetype) VALUES
+(1, 'CL'),
+(2, 'LOP');
 
+-- Create duration table
+CREATE TABLE duration (
+    durationrecid INT PRIMARY KEY,
+    durationtype VARCHAR(50) NOT NULL
+);
 
-<div>
-  <label for="fromDate">From Date:</label>
-  <input
-    id="fromDate"
-    ngxDaterangepickerMd
-    [(ngModel)]="fromDate"
-    (ngModelChange)="onFromDateChange($event)"
-  />
-</div>
+-- Insert data into duration table
+INSERT INTO duration (durationrecid, durationtype) VALUES
+(1, 'Full-day'),
+(2, 'Half day morning'),
+(3, 'Half day evening');
 
-<div>
-  <label for="toDate">To Date:</label>
-  <input
-    id="toDate"
-    ngxDaterangepickerMd
-    [(ngModel)]="toDate"
-    (ngModelChange)="onToDateChange($event)"
-    [minDate]="fromDate"
-  />
-</div>
+-- Create leave_log table with foreign key references
+CREATE TABLE leave_log (
+    leaverecid INT PRIMARY KEY,
+    durationrecid INT,
+    employeeid INT,
+    leavetyperecid INT,
+    noofleave INT,
+    comments VARCHAR(255),
+    fromdate DATE,
+    todate DATE,
+    FOREIGN KEY (durationrecid) REFERENCES duration(durationrecid),
+    FOREIGN KEY (leavetyperecid) REFERENCES leavetype(leavetyperecid)
+);
 
-
-
-
--- Modify the procedure to get total leave for all employees
+-- Create stored procedure to insert a row if it doesn't exist
 DELIMITER //
 
-CREATE PROCEDURE GetAllEmployeesTotalLeave()
+CREATE PROCEDURE InsertLeaveLog(
+    IN leaverecid_param INT,
+    IN durationrecid_param INT,
+    IN employeeid_param INT,
+    IN leavetyperecid_param INT,
+    IN noofleave_param INT,
+    IN comments_param VARCHAR(255),
+    IN fromdate_param DATE,
+    IN todate_param DATE
+)
 BEGIN
-    SELECT 
-        e.employeeid,
-        e.name,
-        e.address,
-        COALESCE(SUM(CASE WHEN lt.leavetype = 'CL' THEN ll.noofleave ELSE 0 END), 0) as CLTotalLeave,
-        COALESCE(SUM(CASE WHEN lt.leavetype = 'LOP' THEN ll.noofleave ELSE 0 END), 0) as LOPTotalLeave,
-        COALESCE(SUM(ll.noofleave), 0) as TotalNoOfLeave
-    FROM employee e
-    LEFT JOIN leave_log ll ON e.employeeid = ll.employeeid
-    LEFT JOIN leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
-    GROUP BY e.employeeid, e.name, e.address;
+    DECLARE row_count INT;
+
+    -- Check if the record already exists
+    SELECT COUNT(*) INTO row_count
+    FROM leave_log
+    WHERE employeeid = employeeid_param
+        AND durationrecid = durationrecid_param
+        AND ((fromdate_param BETWEEN fromdate AND todate) OR (todate_param BETWEEN fromdate AND todate));
+
+    -- Insert the record if it doesn't exist
+    IF row_count = 0 THEN
+        INSERT INTO leave_log (leaverecid, durationrecid, employeeid, leavetyperecid, noofleave, comments, fromdate, todate)
+        VALUES (leaverecid_param, durationrecid_param, employeeid_param, leavetyperecid_param, noofleave_param, comments_param, fromdate_param, todate_param);
+    END IF;
 END //
 
 DELIMITER ;
-
-
-
-
--- Modify the procedure to get total leave for all employees without using GROUP BY
-DELIMITER //
-
-CREATE PROCEDURE GetAllEmployeesTotalLeave()
-BEGIN
-    SELECT 
-        e.employeeid,
-        e.name,
-        e.address,
-        CASE WHEN lt.leavetype = 'CL' THEN ll.noofleave ELSE 0 END as CLTotalLeave,
-        CASE WHEN lt.leavetype = 'LOP' THEN ll.noofleave ELSE 0 END as LOPTotalLeave,
-        ll.noofleave as TotalNoOfLeave
-    FROM employee e
-    LEFT JOIN leave_log ll ON e.employeeid = ll.employeeid
-    LEFT JOIN leavetype lt ON ll.leavetyperecid = lt.leavetyperecid;
-END //
-
-DELIMITER ;
-
-
-...,.
-
--- Modify the procedure to get total leave for all employees without using GROUP BY
-DELIMITER //
-
-CREATE PROCEDURE GetAllEmployeesTotalLeave()
-BEGIN
-    SET SESSION group_concat_max_len = 1000000; -- Set a sufficient length for GROUP_CONCAT
-
-    -- Build the dynamic SQL query
-    SET @sql = CONCAT('
-        SELECT 
-            e.employeeid,
-            e.name,
-            e.address,
-            CASE WHEN lt.leavetype = ''CL'' THEN ll.noofleave ELSE 0 END as CLTotalLeave,
-            CASE WHEN lt.leavetype = ''LOP'' THEN ll.noofleave ELSE 0 END as LOPTotalLeave,
-            ll.noofleave as TotalNoOfLeave
-        FROM employee e
-        LEFT JOIN leave_log ll ON e.employeeid = ll.employeeid
-        LEFT JOIN leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
-    ');
-
-    -- Execute the dynamic SQL query
-    PREPARE stmt FROM @sql;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END //
-
-DELIMITER ;
-
-
-
-
-.....
-
-
-
-<div>
-  <labelor="fromDate">From Date:</label>
-  <inid="fromDate" ngxDaterangepickerM  [(ngModel)]="fromDate" (ngModelChange)="onFromDateChange($event)"
-  />
-</div>
-
-<div>
-  <labelor="toDate">To Date:</label>
-  <inpuid="toDate"
-    ngxDaterangepickerMd
-    [(ngModel)]="toDate"
-    (ngModelChange)="onToDateChange($event)"
-    [minDate]="fromDate"
-  />
-</div>
