@@ -103,3 +103,9 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+
+
+Employee has already taken leave on the selected date; kindly choose an alternative day."
