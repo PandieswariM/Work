@@ -69,3 +69,37 @@ BEGIN
 END //
 
 DELIMITER ;
+
+.,.,....
+
+DELIMITER //
+
+CREATE PROCEDURE InsertLeaveLog(
+    IN p_durationrecid INT,
+    IN p_employeeid INT,
+    IN p_leavetyperecid INT,
+    IN p_noofleave INT,
+    IN p_comments VARCHAR(255),
+    IN p_fromdate DATE,
+    IN p_todate DATE
+)
+BEGIN
+    DECLARE date_exists INT;
+
+    -- Check if the specified date range already exists for the employee
+    SELECT COUNT(*) INTO date_exists
+    FROM leave_log
+    WHERE employeeid = p_employeeid
+      AND ((p_fromdate BETWEEN fromdate AND todate) OR (p_todate BETWEEN fromdate AND todate));
+
+    -- If the date range doesn't exist, insert the new row
+    IF date_exists = 0 THEN
+        INSERT INTO leave_log (durationrecid, employeeid, leavetyperecid, noofleave, comments, fromdate, todate)
+        VALUES (p_durationrecid, p_employeeid, p_leavetyperecid, p_noofleave, p_comments, p_fromdate, p_todate);
+        SELECT 'Row inserted successfully.' AS result;
+    ELSE
+        SELECT 'Date range already exists. Row not inserted.' AS result;
+    END IF;
+END //
+
+DELIMITER ;
