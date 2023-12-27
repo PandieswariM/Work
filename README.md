@@ -106,6 +106,25 @@ DELIMITER ;
 
 
 
+....
+
+SELECT
+    e.employeeid,
+    e.name,
+    e.address,
+    5 - COALESCE(SUM(CASE WHEN lt.leavetype = 'CL' THEN ll.noofleave ELSE 0 END), 0) AS CLBalance,
+    5 - COALESCE(SUM(CASE WHEN lt.leavetype = 'LOP' THEN ll.noofleave ELSE 0 END), 0) AS LOPBalance
+FROM
+    employee e
+LEFT JOIN
+    leave_log ll ON e.employeeid = ll.employeeid
+LEFT JOIN
+    leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
+GROUP BY
+    e.employeeid, e.name, e.address;
+
+
+
 
 
 Employee has already taken leave on the selected date; kindly choose an alternative day."
