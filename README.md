@@ -109,3 +109,37 @@ $app->post('/upload', function (Request $request, Response $response, array $arg
         return $response->withJson(['status' => 'error', 'message' => 'File upload error']);
     }
 });
+
+
+
+
+....
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css']
+})
+export class YourComponent {
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+
+    if (file) {
+      this.saveFileToLocalFolder(file);
+    }
+  }
+
+  saveFileToLocalFolder(file: File): void {
+    const blob = new Blob([file], { type: file.type });
+    const link = document.createElement('a');
+
+    link.href = window.URL.createObjectURL(blob);
+    link.download = file.name;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
