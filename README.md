@@ -193,3 +193,7 @@ $app->post('/upload', function (Request $request, Response $response) {
     return $response->withJson(['success' => true, 'data' => $processedData]);
 });
 
+
+
+
+If you want to convey that only notifications for tomorrow and subsequent days should be canceled, you could say: "Cancel notifications for tomorrow and beyond."
