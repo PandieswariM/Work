@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
+in<form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
   <input type="file" name="excelFile" (change)="onFileChange($event)" />
   <button type="submit">Upload</button>
 </form>
@@ -197,3 +197,47 @@ $app->post('/upload', function (Request $request, Response $response) {
 
 
 If you want to convey that only notifications for tomorrow and subsequent days should be canceled, you could say: "Cancel notifications for tomorrow and beyond."
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-form',
+  templateUrl: './your-form.component.html',
+  styleUrls: ['./your-form.component.css']
+})
+export class YourFormComponent {
+  model = {
+    name: '',
+    email: ''
+    // Add more properties as needed
+  };
+
+  submitForm(form: NgForm) {
+    if (form.invalid) {
+      // Find the first invalid field
+      const firstInvalidField = Object.keys(form.controls).find(field => form.controls[field].invalid);
+
+      // Log or display the first invalid field
+      console.log(`First invalid field: ${firstInvalidField}`);
+
+      // Optionally, you can focus on the first invalid field
+      document.getElementById(firstInvalidField)?.focus();
+    } else {
+      // Form is valid, proceed with submission
+    }
+  }
+}
+
+<form #myForm="ngForm" (ngSubmit)="submitForm(myForm)">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" [(ngModel)]="model.email" #email="ngModel" required>
+
+  <!-- Add more form fields as needed -->
+
+  <button type="submit">Submit</button>
+</form>
+
