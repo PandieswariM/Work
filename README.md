@@ -1,111 +1,111 @@
-<!-- my.component.html -->
-
-<div>
-  <p>{{ myResponse?.message }}</p>
-</div>
-
+<form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
+  <input type="file" name="excelFile" (change)="onFileChange($event)" />
+  <button type="submit">Upload</button>
+</form>
 
 
-// my.component.ts
 
-import { Component, OnInit } from '@angular/core';
-import { MyService } from './my.service';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-my',
-  templateUrl: './my.component.html',
-  styleUrls: ['./my.component.css'],
+  selector: 'app-upload',
+  templateUrl: './upload.component.html',
+  styleUrls: ['./upload.component.css'],
 })
-export class MyComponent implements OnInit {
-  myResponse: object;
+export class UploadComponent {
+  selectedFile: File;
 
-  constructor(private myService: MyService) {}
+  onFileChange(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
 
-  ngOnInit(): void {
-    this.myService.fetchData().subscribe((response) => {
-      this.myResponse = response;
-      // Now 'this.myResponse' contains the response object from the backend
-    });
+  onSubmit(): void {
+    // Send the file to the backend using a service
   }
 }
 
 
-// my.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MyService {
-  private apiUrl = 'http://your-backend-url/api';
-
+export class UploadService {
   constructor(private http: HttpClient) {}
 
-  fetchData(): Observable<object> {
-    return this.http.get<object>(`${this.apiUrl}/endpoint`);
+  uploadFile(file: File): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('excelFile', file, file.name);
+
+    return this.http.post<any>('backend-api/upload', formData);
   }
 }
 
 
-// index.php
-
-require 'vendor/autoload.php';
-
-$app = new \Slim\App();
-
-$app->get('/api/endpoint', function ($request, $response) {
-    $data = array(/* your data here */);
-
-    // Encode the data as JSON
-    $jsonEncodedData = json_encode($data);
-
-    // Set the appropriate content type
-    $response = $response->withHeader('Content-Type', 'application/json');
-
-    // Send the JSON response
-    $response->getBody()->write($jsonEncodedData);
-
-    return $response;
-});
-
-$app->run();
+onSubmit(): void {
+  if (this.selectedFile) {
+    this.uploadService.uploadFile(this.selectedFile).subscribe(
+      (response) => {
+        console.log('File uploaded successfully', response);
+      },
+      (error) => {
+        console.error('Error uploading file', error);
+      }
+    );
+  }
+}
 
 
 
-.....
+use Slim\Http\Request;
+use Slim\Http\Response;
 
-// index.php
-
-require 'vendor/autoload.php';
-
-$app = new \Slim\App();
-
-$app->post('/api/endpoint', function ($request, $response) {
-
-
-
-    $data = json_decode($request->getBody(), true);
-
-    // Process the received data
-    $message = isset($data['message']) ? $data['message'] : 'Default Message';
-
-    $responseData = array('message' => $message);
+$app->post('/upload', function (Request $request, Response $response, array $args) {
+    $uploadedFile = $request->getUploadedFiles()['excelFile'];
     
-    // Encode the data as JSON
-    $jsonEncodedData = json_encode($responseData);
-
-    // Set the appropriate content type
-    $response = $response->withHeader('Content-Type', 'application/json');
-
-    // Send the JSON response
-    $response->getBody()->write($jsonEncodedData);
-
-    return $response;
+    // Process the uploaded file as needed (e.g., read content)
+    
+    return $response->withJson(['status' => 'success']);
 });
 
-$app->run();
 
 
+use Slim\Http\Request;
+use Slim\Http\Response;
+use PHPExcel_IOFactory;
+
+$app->post('/upload', function (Request $request, Response $response, array $args) {
+    $uploadedFile = $request->getUploadedFiles()['excelFile'];
+
+    // Check if a file was uploaded
+    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+        // Save the uploaded file to a temporary location
+        $tempFilePath = 'path/to/temp/folder/' . $uploadedFile->getClientFilename();
+        $uploadedFile->moveTo($tempFilePath);
+
+        // Include PHPExcel classes
+        require 'vendor/autoload.php';
+
+        // Read the Excel file using PHPExcel
+        $inputFileType = PHPExcel_IOFactory::identify($tempFilePath);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($tempFilePath);
+
+        // Access data from the sheet as needed
+        $sheet = $objPHPExcel->getActiveSheet();
+        $data = [];
+        foreach ($sheet->getRowIterator() as $row) {
+            $data[] = $row->getValues();
+        }
+
+        // Do something with $data (e.g., process, store, or return it)
+
+        // Delete the temporary file
+        unlink($tempFilePath);
+
+        return $response->withJson(['status' => 'success', 'data' => $data]);
+    } else {
+        return $response->withJson(['status' => 'error', 'message' => 'File upload error']);
+    }
+});
