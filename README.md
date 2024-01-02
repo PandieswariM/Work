@@ -143,3 +143,53 @@ export class YourComponent {
     document.body.removeChild(link);
   }
 }
+
+
+
+
+.....
+
+
+npm install xlsx
+
+// component.ts
+import * as XLSX from 'xlsx';
+
+onFileChange(event: any) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e: any) => {
+    const workbook = XLSX.read(e.target.result, { type: 'binary' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    // Now you can send sheetData to the server
+    this.httpClient.post('your-server-url/upload', { sheetData }).subscribe(response => {
+      console.log(response);
+    });
+  };
+
+  reader.readAsBinaryString(file);
+}
+
+
+// index.php
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
+require_once 'vendor/autoload.php'; // adjust the path as needed
+
+$app->post('/upload', function (Request $request, Response $response) {
+    $uploadedFile = $request->getParsedBody()['sheetData'];
+
+    // Now $uploadedFile contains the sheet data, and you can process it using PHPExcel
+    require_once 'path/to/PHPExcel/Classes/PHPExcel/IOFactory.php';
+
+    $objPHPExcel = PHPExcel_IOFactory::createReader('Excel2007')->load($uploadedFile);
+
+    // Process $objPHPExcel as needed
+
+    return $response->withJson(['success' => true, 'data' => $processedData]);
+});
+
