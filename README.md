@@ -99,3 +99,18 @@ const inputDate = new Date('25/12/2023');
 
 const formattedDate = datePipe.transform(inputDate, 'yyyy-MM-dd');
 console.log(formattedDate);  // Output: 2023-12-25
+
+
+
+.....
+
+
+function convertDateFormat(inputDate) {
+    const parts = inputDate.split('/');
+    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return formattedDate;
+}
+
+const originalDate = "25/12/2023";
+const formattedDate = convertDateFormat(originalDate);
+console.log(formattedDate);  // Output: 2023-12-25
