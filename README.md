@@ -88,3 +88,14 @@ DELIMITER ;
 SELECT *
 FROM your_table_name
 WHERE YEAR(dob) = 2000;
+
+
+
+
+import { DatePipe } from '@angular/common';
+
+const datePipe = new DatePipe('en-US');
+const inputDate = new Date('25/12/2023');
+
+const formattedDate = datePipe.transform(inputDate, 'yyyy-MM-dd');
+console.log(formattedDate);  // Output: 2023-12-25
