@@ -81,3 +81,10 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+
+
+SELECT *
+FROM your_table_name
+WHERE YEAR(dob) = 2000;
