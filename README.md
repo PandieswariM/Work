@@ -32,3 +32,9 @@ shouldDisableButton(): boolean {
 }
 -->
 
+UpdateCellrenderer(params: any): string {
+    const noOfLeave = params.data.Noofleave || 0;
+    const isButtonDisabled = noOfLeave > 10 ? 'disabled' : '';
+
+    return `<button class="btn btn-success btn-sm update-button" ${isButtonDisabled}>Update</button>`;
+}
