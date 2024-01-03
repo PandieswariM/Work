@@ -38,3 +38,46 @@ UpdateCellrenderer(params: any): string {
 
     return `<button class="btn btn-success btn-sm update-button" ${isButtonDisabled}>Update</button>`;
 }
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetLeaveBalance(IN employeeIdParam INT, IN yearParam INT)
+BEGIN
+    SELECT
+        ll.leaverecid,
+        ll.noofleave,
+        ll.comments,
+        d.durationtype,
+        lt.leavetype,
+        CASE
+            WHEN lt.leavetype = 'CL' THEN 5 - IFNULL((
+                SELECT SUM(noofleave)
+                FROM leave_log sub_ll
+                WHERE sub_ll.employeeid = ll.employeeid
+                    AND sub_ll.leavetyperecid = lt.leavetyperecid
+                    AND sub_ll.fromdate <= ll.fromdate
+                    AND YEAR(sub_ll.fromdate) = yearParam
+            ), 0)
+            WHEN lt.leavetype = 'LOP' THEN 5 - IFNULL((
+                SELECT SUM(noofleave)
+                FROM leave_log sub_ll
+                WHERE sub_ll.employeeid = ll.employeeid
+                    AND sub_ll.leavetyperecid = lt.leavetyperecid
+                    AND sub_ll.fromdate <= ll.fromdate
+                    AND YEAR(sub_ll.fromdate) = yearParam
+            ), 0)
+        END AS balanceleave
+    FROM
+        leave_log ll
+    JOIN
+        duration d ON ll.durationrecid = d.durationrecid
+    JOIN
+        leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
+    WHERE
+        ll.employeeid = employeeIdParam AND YEAR(ll.fromdate) = yearParam;
+END //
+
+DELIMITER ;
