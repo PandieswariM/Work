@@ -1,243 +1,34 @@
-in<form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
-  <input type="file" name="excelFile" (change)="onFileChange($event)" />
-  <button type="submit">Upload</button>
-</form>
+// Add a property to track selected row(s)
+public selectedRows: any[] = [];
 
+// ...
 
-
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.css'],
-})
-export class UploadComponent {
-  selectedFile: File;
-
-  onFileChange(event: any): void {
-    this.selectedFile = event.target.files[0];
-  }
-
-  onSubmit(): void {
-    // Send the file to the backend using a service
-  }
+// Update selectedRows property when row selection changes
+onSelectionChanged(event: any): void {
+    this.selectedRows = this.EmployeeGridApi.getSelectedRows();
 }
 
+// ...
 
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+// In your ngOnInit or constructor, set up a selectionChanged event listener
+ngOnInit() {
+    // ... (your existing code)
 
-@Injectable({
-  providedIn: 'root',
-})
-export class UploadService {
-  constructor(private http: HttpClient) {}
-
-  uploadFile(file: File): Observable<any> {
-    const formData: FormData = new FormData();
-    formData.append('excelFile', file, file.name);
-
-    return this.http.post<any>('backend-api/upload', formData);
-  }
+    // Add a selectionChanged event listener
+    this.EmployeeGridOptions.onSelectionChanged = this.onSelectionChanged.bind(this);
 }
 
+// ...
 
-onSubmit(): void {
-  if (this.selectedFile) {
-    this.uploadService.uploadFile(this.selectedFile).subscribe(
-      (response) => {
-        console.log('File uploaded successfully', response);
-      },
-      (error) => {
-        console.error('Error uploading file', error);
-      }
-    );
-  }
+// In your HTML, use the selectedRows property to conditionally disable the button
+<button class="btn btn-success btn-sm update-button" [disabled]="shouldDisableButton()">Update</button>
+
+// ...
+
+// Add a method to check if the button should be disabled
+shouldDisableButton(): boolean {
+    // Check if there are selected rows and if the 'Active' value is 'Yes'
+    return this.selectedRows.length === 1 && this.selectedRows[0].Active === 'Yes';
 }
-
-
-
-use Slim\Http\Request;
-use Slim\Http\Response;
-
-$app->post('/upload', function (Request $request, Response $response, array $args) {
-    $uploadedFile = $request->getUploadedFiles()['excelFile'];
-    
-    // Process the uploaded file as needed (e.g., read content)
-    
-    return $response->withJson(['status' => 'success']);
-});
-
-
-
-use Slim\Http\Request;
-use Slim\Http\Response;
-use PHPExcel_IOFactory;
-
-$app->post('/upload', function (Request $request, Response $response, array $args) {
-    $uploadedFile = $request->getUploadedFiles()['excelFile'];
-
-    // Check if a file was uploaded
-    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        // Save the uploaded file to a temporary location
-        $tempFilePath = 'path/to/temp/folder/' . $uploadedFile->getClientFilename();
-        $uploadedFile->moveTo($tempFilePath);
-
-        // Include PHPExcel classes
-        require 'vendor/autoload.php';
-
-        // Read the Excel file using PHPExcel
-        $inputFileType = PHPExcel_IOFactory::identify($tempFilePath);
-        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        $objPHPExcel = $objReader->load($tempFilePath);
-
-        // Access data from the sheet as needed
-        $sheet = $objPHPExcel->getActiveSheet();
-        $data = [];
-        foreach ($sheet->getRowIterator() as $row) {
-            $data[] = $row->getValues();
-        }
-
-        // Do something with $data (e.g., process, store, or return it)
-
-        // Delete the temporary file
-        unlink($tempFilePath);
-
-        return $response->withJson(['status' => 'success', 'data' => $data]);
-    } else {
-        return $response->withJson(['status' => 'error', 'message' => 'File upload error']);
-    }
-});
-
-
-
-
-....
-
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-your-component',
-  templateUrl: './your-component.component.html',
-  styleUrls: ['./your-component.component.css']
-})
-export class YourComponent {
-  onFileChange(event: any): void {
-    const file = event.target.files[0];
-
-    if (file) {
-      this.saveFileToLocalFolder(file);
-    }
-  }
-
-  saveFileToLocalFolder(file: File): void {
-    const blob = new Blob([file], { type: file.type });
-    const link = document.createElement('a');
-
-    link.href = window.URL.createObjectURL(blob);
-    link.download = file.name;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-}
-
-
-
-
-.....
-
-
-npm install xlsx
-
-// component.ts
-import * as XLSX from 'xlsx';
-
-onFileChange(event: any) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-
-  reader.onload = (e: any) => {
-    const workbook = XLSX.read(e.target.result, { type: 'binary' });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-    // Now you can send sheetData to the server
-    this.httpClient.post('your-server-url/upload', { sheetData }).subscribe(response => {
-      console.log(response);
-    });
-  };
-
-  reader.readAsBinaryString(file);
-}
-
-
-// index.php
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
-require_once 'vendor/autoload.php'; // adjust the path as needed
-
-$app->post('/upload', function (Request $request, Response $response) {
-    $uploadedFile = $request->getParsedBody()['sheetData'];
-
-    // Now $uploadedFile contains the sheet data, and you can process it using PHPExcel
-    require_once 'path/to/PHPExcel/Classes/PHPExcel/IOFactory.php';
-
-    $objPHPExcel = PHPExcel_IOFactory::createReader('Excel2007')->load($uploadedFile);
-
-    // Process $objPHPExcel as needed
-
-    return $response->withJson(['success' => true, 'data' => $processedData]);
-});
-
-
-
-
-If you want to convey that only notifications for tomorrow and subsequent days should be canceled, you could say: "Cancel notifications for tomorrow and beyond."
-
-
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-your-form',
-  templateUrl: './your-form.component.html',
-  styleUrls: ['./your-form.component.css']
-})
-export class YourFormComponent {
-  model = {
-    name: '',
-    email: ''
-    // Add more properties as needed
-  };
-
-  submitForm(form: NgForm) {
-    if (form.invalid) {
-      // Find the first invalid field
-      const firstInvalidField = Object.keys(form.controls).find(field => form.controls[field].invalid);
-
-      // Log or display the first invalid field
-      console.log(`First invalid field: ${firstInvalidField}`);
-
-      // Optionally, you can focus on the first invalid field
-      document.getElementById(firstInvalidField)?.focus();
-    } else {
-      // Form is valid, proceed with submission
-    }
-  }
-}
-
-<form #myForm="ngForm" (ngSubmit)="submitForm(myForm)">
-  <label for="name">Name:</label>
-  <input type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required>
-
-  <label for="email">Email:</label>
-  <input type="email" id="email" name="email" [(ngModel)]="model.email" #email="ngModel" required>
-
-  <!-- Add more form fields as needed -->
-
-  <button type="submit">Submit</button>
-</form>
+-->
 
