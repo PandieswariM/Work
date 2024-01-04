@@ -1,116 +1,33 @@
-// Add a property to track selected row(s)
-public selectedRows: any[] = [];
+// Import necessary modules
+import { Component } from '@angular/core';
 
-// ...
+@Component({
+  selector: 'app-your-grid',
+  templateUrl: './your-grid.component.html',
+  styleUrls: ['./your-grid.component.css']
+})
+export class YourGridComponent {
+  // Sample data
+  rowData = [
+    { id: 1, name: 'John', graduation: 'B.Sc', year: 2022, dob: '1990-01-01' },
+    // Add more rows as needed
+  ];
 
-// Update selectedRows property when row selection changes
-onSelectionChanged(event: any): void {
-    this.selectedRows = this.EmployeeGridApi.getSelectedRows();
+  // Column definitions
+  columnDefs = [
+    { headerName: 'ID', field: 'id' },
+    { headerName: 'Name', field: 'name' },
+    { headerName: 'Graduation', field: 'graduation' },
+    { headerName: 'Year', field: 'year', hide: true }, // Initially hidden
+    { headerName: 'DOB', field: 'dob' }
+  ];
+
+  // Flag to control column visibility
+  isYearActive = true;
+
+  // Toggle function to switch column visibility
+  toggleYearColumn() {
+    this.isYearActive = !this.isYearActive;
+    this.columnDefs.find(column => column.field === 'year').hide = !this.isYearActive;
+  }
 }
-
-// ...
-
-// In your ngOnInit or constructor, set up a selectionChanged event listener
-ngOnInit() {
-    // ... (your existing code)
-
-    // Add a selectionChanged event listener
-    this.EmployeeGridOptions.onSelectionChanged = this.onSelectionChanged.bind(this);
-}
-
-// ...
-
-// In your HTML, use the selectedRows property to conditionally disable the button
-<button class="btn btn-success btn-sm update-button" [disabled]="shouldDisableButton()">Update</button>
-
-// ...
-
-// Add a method to check if the button should be disabled
-shouldDisableButton(): boolean {
-    // Check if there are selected rows and if the 'Active' value is 'Yes'
-    return this.selectedRows.length === 1 && this.selectedRows[0].Active === 'Yes';
-}
--->
-
-UpdateCellrenderer(params: any): string {
-    const noOfLeave = params.data.Noofleave || 0;
-    const isButtonDisabled = noOfLeave > 10 ? 'disabled' : '';
-
-    return `<button class="btn btn-success btn-sm update-button" ${isButtonDisabled}>Update</button>`;
-}
-
-
-
-
-DELIMITER //
-
-CREATE PROCEDURE GetLeaveBalance(IN employeeIdParam INT, IN yearParam INT)
-BEGIN
-    SELECT
-        ll.leaverecid,
-        ll.noofleave,
-        ll.comments,
-        d.durationtype,
-        lt.leavetype,
-        CASE
-            WHEN lt.leavetype = 'CL' THEN 5 - IFNULL((
-                SELECT SUM(noofleave)
-                FROM leave_log sub_ll
-                WHERE sub_ll.employeeid = ll.employeeid
-                    AND sub_ll.leavetyperecid = lt.leavetyperecid
-                    AND sub_ll.fromdate <= ll.fromdate
-                    AND YEAR(sub_ll.fromdate) = yearParam
-            ), 0)
-            WHEN lt.leavetype = 'LOP' THEN 5 - IFNULL((
-                SELECT SUM(noofleave)
-                FROM leave_log sub_ll
-                WHERE sub_ll.employeeid = ll.employeeid
-                    AND sub_ll.leavetyperecid = lt.leavetyperecid
-                    AND sub_ll.fromdate <= ll.fromdate
-                    AND YEAR(sub_ll.fromdate) = yearParam
-            ), 0)
-        END AS balanceleave
-    FROM
-        leave_log ll
-    JOIN
-        duration d ON ll.durationrecid = d.durationrecid
-    JOIN
-        leavetype lt ON ll.leavetyperecid = lt.leavetyperecid
-    WHERE
-        ll.employeeid = employeeIdParam AND YEAR(ll.fromdate) = yearParam;
-END //
-
-DELIMITER ;
-
-
-
-
-SELECT *
-FROM your_table_name
-WHERE YEAR(dob) = 2000;
-
-
-
-
-import { DatePipe } from '@angular/common';
-
-const datePipe = new DatePipe('en-US');
-const inputDate = new Date('25/12/2023');
-
-const formattedDate = datePipe.transform(inputDate, 'yyyy-MM-dd');
-console.log(formattedDate);  // Output: 2023-12-25
-
-
-
-.....
-
-
-function convertDateFormat(inputDate) {
-    const parts = inputDate.split('/');
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return formattedDate;
-}
-
-const originalDate = "25/12/2023";
-const formattedDate = convertDateFormat(originalDate);
-console.log(formattedDate);  // Output: 2023-12-25
