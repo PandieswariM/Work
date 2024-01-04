@@ -57,3 +57,25 @@ export class YourButtonComponent {
     this.isFirstIcon = !this.isFirstIcon;
   }
 }
+
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-form',
+  templateUrl: './your-form.component.html',
+  styleUrls: ['./your-form.component.css']
+})
+export class YourFormComponent {
+  submitForm(form: NgForm) {
+    if (form.invalid) {
+      // Focus on the first invalid field
+      const invalidControl = Object.keys(form.controls).find(control => form.controls[control].invalid);
+      document.getElementById(invalidControl)?.focus();
+      return;
+    }
+
+    // Continue with form submission logic
+  }
+}
