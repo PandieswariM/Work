@@ -31,3 +31,29 @@ export class YourGridComponent {
     this.columnDefs.find(column => column.field === 'year').hide = !this.isYearActive;
   }
 }
+
+
+.......
+
+
+
+// Import necessary modules
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-button',
+  template: `
+    <button (click)="toggleIcons()">
+      <i [ngClass]="isFirstIcon ? 'fas fa-icon1' : 'fas fa-icon2'"></i>
+      <i [ngClass]="isFirstIcon ? 'fas fa-icon3' : 'fas fa-icon4'"></i>
+    </button>
+  `,
+  styleUrls: ['./your-button.component.css']
+})
+export class YourButtonComponent {
+  isFirstIcon = true;
+
+  toggleIcons() {
+    this.isFirstIcon = !this.isFirstIcon;
+  }
+}
