@@ -75,5 +75,9 @@ export class DropdownComponent {
       </label>
     </div>
   </div>
+
+
+
+ ..........
   <inputtype="text" class="form-control" [(ngModel)]="selectedItemsText" readonly>
 </div>
