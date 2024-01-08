@@ -37,3 +37,43 @@ export class DropdownComponent {
   }
 }
 
+
+
+
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-dropdown',
+  templateUrl: './dropdown.component.html',
+  styleUrls: ['./dropdown.component.css']
+})
+export class DropdownComponent {
+  items = [
+    { name: 'Item 1', selected: false },
+    { name: 'Item 2', selected: false },
+    { name: 'Item 3', selected: false },
+    // Add more items as needed
+  ];
+
+  selectedItemsText: string = '';
+
+  onCheckboxChange() {
+    const selectedItems = this.items.filter(item => item.selected).map(item => item.name);
+    this.selectedItemsText = selectedItems.join(', ');
+  }
+}
+
+
+
+<divclass="dropdown">
+  <divclass="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-height: 150px; overflow-y: auto;">
+    <divclass="checkbox" *ngFor="let item of items">
+      <label>
+        <input type="checkbox" [(ngModel)]="item.selected" (change)="onCheckboxChange()"> {{ item.name }}
+      </label>
+    </div>
+  </div>
+  <inputtype="text" class="form-control" [(ngModel)]="selectedItemsText" readonly>
+</div>
