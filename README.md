@@ -81,3 +81,93 @@ export class DropdownComponent {
  ..........
   <inputtype="text" class="form-control" [(ngModel)]="selectedItemsText" readonly>
 </div>
+
+
+
+
+
+
+
+
+..,
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css']
+})
+export class YourComponent {
+  dropdownOptions = [
+    { name: 'Item 1', selected: false },
+    { name: 'Item 2', selected: false },
+    { name: 'Item 3', selected: false },
+    // Add more items as needed
+  ];
+
+  showDropdown = false;
+
+  toggleDropdown() {
+    this.showDropdown = !this.showDropdown;
+  }
+
+  onCheckboxChange(option: any) {
+    option.selected = !option.selected;
+  }
+
+  getSelectedOptions() {
+    return this.dropdownOptions
+      .filter(option => option.selected)
+      .map(option => option.name)
+      .join(', ');
+  }
+
+  onSubmit() {
+    const selectedNames = this.getSelectedOptions();
+    console.log('Selected Names:', selectedNames);
+  }
+}
+
+
+
+<divclass="dropdown">
+  <input type="text" [value]="getSelectedOptions()" readonly (click)="toggleDropdown()" />
+
+  <divclass="dropdown-content" *ngIf="showDropdown">
+    <div *ngFor="let option of dropdownOptions">
+      <label>
+        <input type="checkbox" [checked]="option.selected" (change)="onCheckboxChange(option)" />
+        {{ option.name }}
+        .......
+        
+      </label>
+    </div>
+  ......
+
+  </div>
+</div>
+......
+
+
+
+<button(click)="onSubmit()">Submit</button>
+
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+
