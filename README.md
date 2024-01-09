@@ -87,3 +87,47 @@ import { YourService } from './your-component/your-service.service';
   bootstrap: [YourComponent],
 })
 export class AppModule {}
+
+
+
+
+
+
+......,.
+
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { YourService } from './your-service.service';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css'],
+})
+export class YourComponent implements OnInit, OnDestroy {
+  private subscription: Subscription;
+
+  constructor(private yourService: YourService) {}
+
+  ngOnInit(): void {
+    // Assign the subscription when subscribing to an observable
+    this.subscription = this.yourService.getEmployeeData().subscribe(
+      (employee) => {
+        // Handle the emitted value here
+        console.log('Received employee data:', employee);
+      },
+      (error) => {
+        // Handle errors here
+        console.error('Error occurred:', error);
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe to avoid memory leaks when the component is destroyed
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+}
