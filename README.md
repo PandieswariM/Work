@@ -170,3 +170,29 @@ export class YourGridComponent {
   bottom: 0;
   z-index: 1;
 }
+
+
+
+
+
+
+// app-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { EmployeeComponent } from './employee/employee.component';
+import { AuthGuard } from './auth.guard';
+
+const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'employee', component: EmployeeComponent, canActivate: [AuthGuard] },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }, // Redirect any unrecognized URL to the login page
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
