@@ -1,133 +1,116 @@
-// your-service.service.ts
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class YourService {
-  constructor(private http: HttpClient) {}
-
-  getDataForItem(item: any): Observable<any> {
-    // Adjust your API endpoint or data fetching logic
-    return this.http.get<any>(`your-api-endpoint/${item}`);
-  }
-}
-
-
-
-
-// your-component.component.ts
-import { Component, OnInit } from '@angular/core';
-import { YourService } from './your-service.service';
-import { forkJoin } from 'rxjs';
-
-@Component({
-  selector: 'app-your-component',
-  templateUrl: './your-component.component.html',
-  styleUrls: ['./your-component.component.css'],
-})
-export class YourComponent implements OnInit {
-  results: any[];
-
-  constructor(private yourService: YourService) {}
-
-  ngOnInit(): void {
-    const observables = [];
-
-    // Assume you have an array of items to iterate over
-    const items = [/* your array of items */];
-
-    items.forEach((item) => {
-      // Create an Observable for each item
-      const observable = this.yourService.getDataForItem(item);
-
-      // Add the Observable to the array
-      observables.push(observable);
-    });
-
-    // Use forkJoin to wait for all Observables to complete
-    forkJoin(observables).subscribe(
-      (results) => {
-        // Handle the results here
-        this.results = results;
-        console.log(results);
-      },
-      (error) => {
-        // Handle errors here
-        console.error(error);
-      }
-    );
-  }
-}
-
-
-
-
-// app.module.ts
-import { BrowserModule } from '@angular/platform-browser';
+// app-routing.module.ts
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { RouterModule, Routes } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { EmployeeComponent } from './employee/employee.component';
+import { AuthGuard } from './auth.guard';
 
-import { YourComponent } from './your-component/your-component.component';
-import { YourService } from './your-component/your-service.service';
+const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'employee', component: EmployeeComponent, canActivate: [AuthGuard] },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  // Other routes...
+];
 
 @NgModule({
-  declarations: [
-    YourComponent,
-    // Other components here
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    // Other modules here
-  ],
-  providers: [YourService],
-  bootstrap: [YourComponent],
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
-export class AppModule {}
+export class AppRoutingModule { 
 
 
 
 
 
 
-......,.
 
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { YourService } from './your-service.service';
-import { Subscription } from 'rxjs';
+
+
+<!-- login.component.html -->
+<form(ngSubmit)="onSubmit(username.value, password.value)">
+  <labelfor="username">Username:</label>
+  <input type="text" id="username" #username required>
+
+  <labelfor="password">Password:</label>
+  <input type="password" id="password" #password required>
+
+  <buttontype="submit">Login</button>
+</form>
+
+
+
+
+
+// login.component.ts
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'app-your-component',
-  templateUrl: './your-component.component.html',
-  styleUrls: ['./your-component.component.css'],
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
-export class YourComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
+export class LoginComponent {
+  constructor(private authService: AuthService, private router: Router) {}
 
-  constructor(private yourService: YourService) {}
+  onSubmit(username: string, password: string): void {
+    if (this.authService.login(username, password)) {
+      this.router.navigate(['/employee']);
+    } else {
+      // Handle unsuccessful login (e.g., show an error message)
+    }
+  }
+}
 
-  ngOnInit(): void {
-    // Assign the subscription when subscribing to an observable
-    this.subscription = this.yourService.getEmployeeData().subscribe(
-      (employee) => {
-        // Handle the emitted value here
-        console.log('Received employee data:', employee);
-      },
-      (error) => {
-        // Handle errors here
-        console.error('Error occurred:', error);
-      }
-    );
+
+
+
+
+// auth.guard.ts
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { AuthService } from './auth.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): boolean {
+    const isLoggedIn = this.authService.isLoggedIn();
+
+    if (!isLoggedIn) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+    return true;
+  }
+}
+
+
+
+// auth.service.ts
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private loggedIn = false;
+
+  login(username: string, password: string): boolean {
+    // Your authentication logic here
+    // For simplicity, let's assume successful login for any non-empty username and password
+    this.loggedIn = username.trim() !== '' && password.trim() !== '';
+    return this.loggedIn;
   }
 
-  ngOnDestroy(): void {
-    // Unsubscribe to avoid memory leaks when the component is destroyed
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+  isLoggedIn(): boolean {
+    return this.loggedIn;
   }
 }
