@@ -114,3 +114,59 @@ export class AuthService {
     return this.loggedIn;
   }
 }
+
+
+
+
+
+
+
+
+..,.
+
+
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-grid',
+  templateUrl: './your-grid.component.html',
+  styleUrls: ['./your-grid.component.css']
+})
+export class YourGridComponent {
+  // Your column definitions
+  columnDefs = [
+    { headerName: 'Column 1', field: 'col1' },
+    { headerName: 'Column 2', field: 'col2' },
+    // Add more columns as needed
+  ];
+
+  // Your row data
+  rowData = [
+    { col1: 'Value 1', col2: 'Value 2' },
+    // Add more rows as needed
+  ];
+
+  // Your grid options
+  gridOptions = {
+    // Other grid options...
+
+    // Define row class rules
+    rowClassRules: {
+      'last-row': (params) => {
+        const lastRowIndex = params.api.getDisplayedRowCount() - 1;
+        return params.rowIndex === lastRowIndex;
+      },
+    },
+  };
+}
+
+
+
+.last-row {
+  background-color: lightgray;  // Set your preferred background color
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
