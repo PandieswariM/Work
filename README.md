@@ -32,3 +32,39 @@ export class YourComponent {
     ];
   }
 }
+
+
+
+
+
+
+// your.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-your-component',
+  template: `
+    <ag-grid-angular
+      [rowData]="yourData"
+      [columnDefs]="yourColumnDefs"
+    ></ag-grid-angular>
+  `,
+})
+export class YourComponent {
+  yourData: any[]; // Your data array
+  yourColumnDefs: any[]; // Your column definitions
+
+  constructor() {
+    this.yourColumnDefs = [
+      {
+        headerName: 'Your Header',
+        field: 'total',
+        cellClassRules: {
+          'red-text': 'data.total.includes("total:")',
+          'black-text': 'data.total.includes("total: 5")',
+        },
+      },
+      // Add other columns as needed
+    ];
+  }
+}
