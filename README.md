@@ -1,23 +1,63 @@
-DELIMITER //
+// your-grid.component.ts
+import { Component } from '@angular/core';
+import { AgGridAngular } from 'ag-grid-angular';
 
-CREATE PROCEDURE DynamicSelect(
-    IN p_userid VARCHAR(255),
-    IN p_password VARCHAR(255),
-    OUT p_row_count INT
-)
-BEGIN
-    SET @sql_query = CONCAT('SELECT COUNT(*) FROM ea_users WHERE userid = ''', p_userid, ''' AND password = ''', p_password, ''' AND isactive = 1');
+@Component({
+  selector: 'app-your-grid',
+  template: `
+    <ag-grid-angular
+      style="width: 100%; height: 400px;"
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      (gridReady)="onGridReady($event)"
+      [domLayout]="autoHeight"
+    ></ag-grid-angular>
+  `,
+})
+export class YourGridComponent {
+  rowData = [
+    { sno: 1, employeeName: 'John Doe', id: 101, age: 25 },
+    // Add more data as needed
+  ];
 
-    PREPARE dynamic_statement FROM @sql_query;
-    EXECUTE dynamic_statement INTO p_row_count;
-    DEALLOCATE PREPARE dynamic_statement;
-END //
+  columnDefs = [
+    { headerName: 'SNO', field: 'sno' },
+    { headerName: 'Employee Name', field: 'employeeName' },
+    {
+      headerName: 'ID',
+      field: 'id',
+      cellStyle: { color: 'red' },
+      tooltipField: (params) => {
+        // Check if it's the bottom pinned row
+        if (params.node.rowPinned === 'bottom') {
+          return `Total ID: ${params.value}`;
+        } else {
+          return `Individual ID: ${params.value}`;
+        }
+      },
+    },
+    { headerName: 'Age', field: 'age', tooltipField: 'age' },
+    // Add more columns as needed
+  ];
 
-DELIMITER ;
+  autoHeight = 'autoHeight';
 
+  onGridReady(params: any) {
+    params.api.sizeColumnsToFit();
 
+    // Add the total row
+    const totalRow = {
+      sno: 'Total:',
+      employeeName: '',
+      id: this.rowData.length,
+      age: '',
+    };
 
+    // Add the total row to the end of the row data
+    this.rowData.push(totalRow);
 
-
-CALL DynamicSelect('user123', 'pass123', @row_count);
-SELECT @row_count;
+    // Pin the total row to the bottom
+    params.api.setPinnedBottomRowData([totalRow]);
+  }
+}
