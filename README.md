@@ -1,70 +1,33 @@
-// your.component.ts
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-your-component',
-  template: `
-    <ag-grid-angular
-      [rowData]="yourData"
-      [columnDefs]="yourColumnDefs"
-    ></ag-grid-angular>
-  `,
+  selector: 'app-date-picker',
+  templateUrl: './date-picker.component.html',
+  styleUrls: ['./date-picker.component.css']
 })
-export class YourComponent {
-  yourData: any[]; // Your data array
-  yourColumnDefs: any[]; // Your column definitions
+export class DatePickerComponent {
+  startDate: Date;
+  endDate: Date;
+  weekdaysCount: number;
 
-  constructor() {
-    this.yourColumnDefs = [
-      {
-        headerName: 'Your Header',
-        field: 'total',
-        cellStyle: {
-          'text-align': 'left', // Align text as needed
-        },
-        valueFormatter: (params) => {
-          const totalText = params.data.total.split(':')[0];
-          const value = params.data.total.split(':')[1].trim();
-          return `<span style="color: red;">${totalText}</span>: <span style="color: black;">${value}</span>`;
-        },
-      },
-      // Add other columns as needed
-    ];
-  }
-}
+  calculateWeekdays(): void {
+    if (this.startDate && this.endDate) {
+      let count = 0;
+      let currentDate = new Date(this.startDate);
 
+      while (currentDate <= this.endDate) {
+        const dayOfWeek = currentDate.getDay();
 
+        // Check if the current day is not a weekend (Sunday or Saturday)
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          count++;
+        }
 
+        // Move to the next day
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
 
-
-
-// your.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-your-component',
-  template: `
-    <ag-grid-angular
-      [rowData]="yourData"
-      [columnDefs]="yourColumnDefs"
-    ></ag-grid-angular>
-  `,
-})
-export class YourComponent {
-  yourData: any[]; // Your data array
-  yourColumnDefs: any[]; // Your column definitions
-
-  constructor() {
-    this.yourColumnDefs = [
-      {
-        headerName: 'Your Header',
-        field: 'total',
-        cellClassRules: {
-          'red-text': 'data.total.includes("total:")',
-          'black-text': 'data.total.includes("total: 5")',
-        },
-      },
-      // Add other columns as needed
-    ];
+      this.weekdaysCount = count;
+    }
   }
 }
