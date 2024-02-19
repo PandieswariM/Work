@@ -14,3 +14,6 @@
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.0/angular-material-theme.css">
 
 var app = angular.module('yourApp', ['ngMaterial']);
+
+
+var app = angular.module('yourApp', ['ngMaterial', 'ngMessages']);
