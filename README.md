@@ -1,19 +1,5 @@
-<!-- AngularJS -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
-
-<!-- AngularJS Material -->
-<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.0/angular-material.min.js"></script>
-
-<!-- AngularJS Material CSS -->
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.0/angular-material.min.css">
-
-<!-- AngularJS Material Theming -->
-<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.0/angular-material-theme.min.js"></script>
-
-<!-- Apply a theme -->
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.0/angular-material-theme.css">
-
-var app = angular.module('yourApp', ['ngMaterial']);
-
-
-var app = angular.module('yourApp', ['ngMaterial', 'ngMessages']);
+1. Verify that the sales pages for PD users function properly.
+2. Resolve the database error occurring on the PD user profile page.
+3. Implement changes to the charts on the point and dashboard page.
+4. Adjust the display of drop-down menus for liquidation and placement points based on the customer type.
+5. Address login issues experienced by various customer types through thorough testing and make necessary adjustments to ensure smooth access.
