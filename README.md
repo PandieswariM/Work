@@ -1,13 +1,3 @@
-Test the sales summary and sales page to ensure they function correctly for different types of customers.
-Fix the functionality to update profile images on the profile page.
-Replace all instances of "invalid" with "incorrect."
-Verify that the QA page functions correctly for different types of customers
-
-
-
-Sure, here's the list:
-
-1. Test the sales summary and sales page to ensure they function correctly for different types of customers.
-2. Fix the functionality to update profile images on the profile page.
-3. Replace all instances of "invalid" with "incorrect."
-4. Verify that the QA page functions correctly for different types of customers.
+(SELECT * FROM products ORDER BY price DESC LIMIT 5)
+UNION
+(SELECT * FROM products WHERE id NOT IN (SELECT id FROM products ORDER BY price DESC LIMIT 5))
