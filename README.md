@@ -1,62 +1,82 @@
-/* Increase space between tooltip color box and label */
-.chartjs-tooltip {
-    padding-right: 10px; /* Adjust as needed */
-}
-
-/* If necessary, target the color box specifically */
-.chartjs-tooltip .label {
-    /* Apply styles to the label */
-}
-
-
-
-....
-
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
+var options = {
+    tooltips: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        titleFontColor: '#fff',
+        bodyFontColor: '#fff',
+        footerFontColor: '#fff',
+        callbacks: {
+            label: function(tooltipItem, data) {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                var label = dataset.label || '';
+                var value = dataset.data[tooltipItem.index];
+                return label + ': ' + value;
             }
         },
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        // Add space between color box and label
-                        return context.dataset.label + ': ' + context.formattedValue;
-                    }
-                }
+        custom: function(tooltipModel) {
+            // Tooltip Element
+            var tooltipEl = document.getElementById('chartjs-tooltip');
+
+            // Create element on first render
+            if (!tooltipEl) {
+                tooltipEl = document.createElement('div');
+                tooltipEl.id = 'chartjs-tooltip';
+                tooltipEl.classList.add('custom-tooltip');
+                this._chart.canvas.parentNode.appendChild(tooltipEl);
             }
+
+            // Hide if no tooltip
+            if (tooltipModel.opacity === 0) {
+                tooltipEl.style.opacity = 0;
+                return;
+            }
+
+            // Set caret position
+            tooltipEl.classList.remove('above', 'below', 'no-transform');
+            if (tooltipModel.yAlign) {
+                tooltipEl.classList.add(tooltipModel.yAlign);
+            } else {
+                tooltipEl.classList.add('no-transform');
+            }
+
+            // Set Text
+            if (tooltipModel.body) {
+                var bodyLines = tooltipModel.body.map(function(bodyItem) {
+                    return bodyItem.lines;
+                });
+
+                var innerHtml = '<div style="text-align: center;">';
+
+                bodyLines.forEach(function(body, i) {
+                    var colors = tooltipModel.labelColors[i];
+                    var style = 'background:' + colors.backgroundColor;
+                    style += '; border-color:' + colors.borderColor;
+                    style += '; border-width: 2px';
+                    var span = '<span style="' + style + '"></span>';
+                    innerHtml += '<div>' + span + body + '</div>';
+                });
+
+                innerHtml += '</div>';
+
+                var tooltipRoot = tooltipEl.querySelector('div');
+                tooltipRoot.innerHTML = innerHtml;
+            }
+
+            // Tooltip Position
+            var position = this._chart.canvas.getBoundingClientRect();
+
+            // Display and position tooltip
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.position = 'absolute';
+            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
         }
     }
+};
+
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: options
 });
