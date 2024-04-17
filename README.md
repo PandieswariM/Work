@@ -15,3 +15,28 @@ function onDeviceReady() {
         splashScreen.style.backgroundColor = '#ffffff'; // Set light mode background color
     }
 }
+
+
+
+
+
+
+
+.....
+......
+
+
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  .splash-screen {
+    background-color: #ffffff; /* Change to your desired light mode background color */
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .splash-screen {
+    background-color: #000000; /* Change to your desired dark mode background color */
+  }
+}
