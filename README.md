@@ -1,8 +1,22 @@
-SET @row_number = 0;
+$scope.selectedIndex = 0;
+$scope.isSecondTabDisabled = true;
 
-SELECT 
-    (@row_number:=@row_number + 1) AS index_count,
-    person_details.*
-FROM 
-    person_details
-LIMIT 10;
+$scope.$watch('selectedIndex', function(current, old) {
+  if ($scope.isSecondTabDisabled && current === 1) {
+    $scope.selectedIndex = old;
+  }
+});
+
+
+
+<md-tabs md-selected="selectedIndex">
+  <md-tab label="Tab 1">
+    <!-- Tab 1 content -->
+  </md-tab>
+  <md-tab label="Tab 2" ng-disabled="isSecondTabDisabled">
+    <!-- Tab 2 content -->
+  </md-tab>
+  <md-tab label="Tab 3">
+    <!-- Tab 3 content -->
+  </md-tab>
+</md-tabs>
