@@ -1,12 +1,12 @@
 md-tabs md-selected="selectedIndex"
-  <md-tab label="Tab 1">
-    <!-- Tab 1 content -->
+  <md-tab label="Tab 1"
+    <!-- Tab 1 content --
   </md-tab
-  <md-tab label="Tab 2" ng-disabled="isSecondTabDisabled">
-    <!-- Tab 2 content -->
+  <md-tab label="Tab 2" ng-disabled="isSecondTabDisabled"
+    <!-- Tab 2 content -
   </md-tab
-  <md-tab label="Tab 3">
-    <!-- Tab 3 content -->
+  <md-tab label="Tab 3"
+    <!-- Tab 3 content --
   </md-tab
 md-tabs
 
@@ -41,6 +41,7 @@ app.directive('disableTab', function() {
   };
 });
 
+<!--
 <md-tabs>
   <md-tab label="Tab 1">
     <!-- Tab 1 content -->
@@ -52,6 +53,8 @@ app.directive('disableTab', function() {
     <!-- Tab 3 content -->
   </md-tab>
 </md-tabs>
+
+-->
 
 .disabled-tab {
   pointer-events: none;
