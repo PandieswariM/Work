@@ -8,6 +8,7 @@ $scope.$watch('selectedIndex', function(current, old) {
 });
 
 
+.....
 
 <md-tabs md-selected="selectedIndex">
   <md-tab label="Tab 1">
