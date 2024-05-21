@@ -1,4 +1,4 @@
-<md-tabs md-selected="selectedIndex">
+" <md-tabs md-selected="selectedIndex">
   <md-tab label="Tab 1">
     <!-- Tab 1 content -->
   </md-tab>
@@ -8,7 +8,7 @@
   <md-tab label="Tab 3">
     <!-- Tab 3 content -->
   </md-tab>
-</md-tabs>
+</md-tabs> "
 
 
 $scope.selectedIndex = 0;
