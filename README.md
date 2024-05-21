@@ -41,20 +41,18 @@ app.directive('disableTab', function() {
   };
 });
 
-<!--
-<md-tabs>
-  <md-tab label="Tab 1">
-    <!-- Tab 1 content -->
-  </md-tab>
-  <md-tab label="Tab 2" disable-tab="isSecondTabDisabled">
-    <!-- Tab 2 content -->
-  </md-tab>
-  <md-tab label="Tab 3">
-    <!-- Tab 3 content -->
-  </md-tab>
-</md-tabs>
 
--->
+<md-tabs
+  <md-tab label="Tab 1"
+    <!-- Tab 1 content --
+  </md-tab
+  <md-tab label="Tab 2" disable-tab="isSecondTabDisabled"
+    <!-- Tab 2 content --
+  </md-tab
+  <md-tab label="Tab 3"
+    <!-- Tab 3 content --
+  </md-tab
+</md-tabs
 
 .disabled-tab {
   pointer-events: none;
