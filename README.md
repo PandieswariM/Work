@@ -13,15 +13,17 @@
         }
         li {
             display: flex;
+            align-items: baseline;
         }
         li::before {
             content: counters(section, ".") " ";
             counter-increment: section;
-            flex: 0 0 50px; /* Set a fixed width for alignment */
+            margin-right: 10px; /* Space between number and content */
+            flex-shrink: 0; /* Prevent shrinking of the numbering */
         }
         ul ul {
             counter-reset: section;
-            padding-left: 0;
+            padding-left: 20px; /* Indentation for nested lists */
         }
     </style>
 </head>
