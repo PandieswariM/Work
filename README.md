@@ -9,14 +9,19 @@
         }
         ul {
             list-style-type: none;
-            padding-left: 20px;
+            padding-left: 0;
         }
-        ul > li::before {
+        li {
+            display: flex;
+        }
+        li::before {
             content: counters(section, ".") " ";
             counter-increment: section;
+            flex: 0 0 50px; /* Set a fixed width for alignment */
         }
         ul ul {
             counter-reset: section;
+            padding-left: 0;
         }
     </style>
 </head>
