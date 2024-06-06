@@ -7,7 +7,7 @@
         if (!empty($textfieldValue)) {
             echo "Form submitted with value: " . htmlspecialchars($textfieldValue);
         } else {
-            echo "Textfield is empty!";
+            echo "Textfield is empty!
             <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +28,7 @@
     }
     ?>
 </body>
-</html>
+</html>";
 
         }
 
