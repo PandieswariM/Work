@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Textfield and Button</title>
+    <title>Textfield and Button
     <style>
         .disabled-button {
             opacity: 0.5;
@@ -28,7 +28,7 @@
     }
     ?>
 </body>
-</html>";
+</html>";</title>
 
         }
 
