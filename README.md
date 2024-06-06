@@ -8,9 +8,7 @@
             echo "Form submitted with value: " . htmlspecialchars($textfieldValue);
         } else {
             echo "Textfield is empty!";
-        }
-
-        <!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,3 +30,6 @@
 </body>
 </html>
 
+        }
+
+        
