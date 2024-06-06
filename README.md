@@ -1,4 +1,16 @@
-<!DOCTYPE html>
+
+
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $textfieldValue = trim($_POST['textfield']);
+        // Process the form data as needed
+        if (!empty($textfieldValue)) {
+            echo "Form submitted with value: " . htmlspecialchars($textfieldValue);
+        } else {
+            echo "Textfield is empty!";
+        }
+
+        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,16 +27,6 @@
         <input type="text" id="textfield" name="textfield" value="<?php echo isset($_POST['textfield']) ? htmlspecialchars($_POST['textfield']) : ''; ?>">
         <button id="submitButton" type="submit" class="<?php echo empty($_POST['textfield']) ? 'disabled-button' : ''; ?>">Submit</button>
     </form>
-
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $textfieldValue = trim($_POST['textfield']);
-        // Process the form data as needed
-        if (!empty($textfieldValue)) {
-            echo "Form submitted with value: " . htmlspecialchars($textfieldValue);
-        } else {
-            echo "Textfield is empty!";
-        }
     }
     ?>
 </body>
