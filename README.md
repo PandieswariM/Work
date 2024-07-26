@@ -81,3 +81,4 @@ Here's a working example:
 </body>
 </html>
 ```
+https://shinerweb.com/how-to-crop-image-before-uploading-using-cropper-js/
