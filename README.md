@@ -1,111 +1,73 @@
-To use Cropper.js in your AngularJS project, you can follow these steps:
-
-1. Install Cropper.js using npm or bower:
-
-npm:
+Here is the equivalent code in AngularJS:
 
 ```
-npm install cropperjs
-```
-
-bower:
-
-```
-bower install cropper
-```
-
-1. Include Cropper.js and its CSS file in your HTML file:
-
-```
-<link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
-<script src="node_modules/cropperjs/dist/cropper.js"></script>
-```
-
-1. Add an image element to your HTML file:
-
-```
-<img id="image" src="your-image-url" alt="Image">
-```
-
-1. Create a directive in AngularJS to wrap the Cropper.js functionality:
-
-```
-angular.module('yourApp').directive('imageCropper', function() {
-  return {
-    restrict: 'A',
-    link: function(scope, element) {
-      var cropper = new Cropper(element[0], {
-        aspectRatio: 16 / 9,
-        crop: function(event) {
-          console.log(event.detail.x);
-          console.log(event.detail.y);
-          console.log(event.detail.width);
-          console.log(event.detail.height);
-          console.log(event.detail.rotate);
-          console.log(event.detail.scaleX);
-          console.log(event.detail.scaleY);
-        }
-      });
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Cropper.js</title>
+  <link rel="stylesheet" href="../css/cropper.css">
+  <style>
+    .container {
+      margin: 20px auto;
+      max-width: 640px;
     }
-  };
-});
-```
-
-1. Use the directive in your HTML file:
-
-```
-<img id="image" src="your-image-url" alt="Image" image-cropper>
-```
-
-This will initialize Cropper.js on the image element and allow you to crop the image.
-
-Note: Make sure to replace "your-image-url" with the actual URL of your image. Also, you can customize the Cropper.js options to fit your needs.
-
-
-
-
-
-...
-
-To save the cropped image to a $scope variable when the crop button is clicked, you can use the `getCroppedCanvas()` method of Cropper.js and then convert the canvas to a data URL.
-
-Here's an updated version of the directive:
-
-```
-angular.module('yourApp').directive('imageCropper', function() {
-  return {
-    restrict: 'A',
-    link: function(scope, element) {
-      var cropper = new Cropper(element[0], {
-        aspectRatio: 16 / 9,
-        crop: function(event) {
-          console.log(event.detail.x);
-          console.log(event.detail.y);
-          console.log(event.detail.width);
-          console.log(event.detail.height);
-          console.log(event.detail.rotate);
-          console.log(event.detail.scaleX);
-          console.log(event.detail.scaleY);
+    img {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" ng-controller="CropperController">
+    <h1>Cropper with a range of aspect ratio</h1>
+    <div>
+      <img id="image" src="../images/picture.jpg" alt="Picture" ng-cropper="options">
+    </div>
+  </div>
+  <script src="../js/cropper.js"></script>
+  <script src="(link unavailable)"></script>
+  <script>
+    angular.module('myApp', []).controller('CropperController', function($scope) {
+      $scope.options = {
+        ready: function() {
+          var cropper = this.cropper;
+          var containerData = cropper.getContainerData();
+          var cropBoxData = cropper.getCropBoxData();
+          var aspectRatio = cropBoxData.width / cropBoxData.height;
+          var newCropBoxWidth;
+          if (aspectRatio < 0.5 || aspectRatio > 1.5) {
+            newCropBoxWidth = cropBoxData.height * ((0.5 + 1.5) / 2);
+            cropper.setCropBoxData({
+              left: (containerData.width - newCropBoxWidth) / 2,
+              width: newCropBoxWidth
+            });
+          }
+        },
+        cropmove: function() {
+          var cropper = this.cropper;
+          var cropBoxData = cropper.getCropBoxData();
+          var aspectRatio = cropBoxData.width / cropBoxData.height;
+          if (aspectRatio < 0.5) {
+            cropper.setCropBoxData({
+              width: cropBoxData.height * 0.5
+            });
+          } else if (aspectRatio > 1.5) {
+            cropper.setCropBoxData({
+              width: cropBoxData.height * 1.5
+            });
+          }
         }
-      });
-
-      scope.cropImage = function() {
-        var canvas = cropper.getCroppedCanvas();
-        var imageDataURL = canvas.toDataURL();
-        scope.croppedImage = imageDataURL;
       };
-    }
-  };
-});
+    });
+  </script>
+</body>
+</html>
 ```
 
-Then, in your HTML file, you can add a button to trigger the `cropImage()` function:
+Note that I've added the `ng-app` directive to the `html` element, and the `ng-controller` directive to the `div` element containing the image. I've also defined a `CropperController` controller that sets up the Cropper.js options.
 
-```
-<img id="image" src="your-image-url" alt="Image" image-cropper>
-<button ng-click="cropImage()">Crop</button>
-```
+I've also replaced the `window.addEventListener('DOMContentLoaded', ...)` code with the `ng-cropper` directive, which is a built-in AngularJS directive for working with Cropper.js.
 
-Now, when the crop button is clicked, the `cropImage()` function will be called, and the cropped image will be saved to the `$scope.croppedImage` variable.
-
-Note: The `$scope.croppedImage` variable will hold the data URL of the cropped image, which can be used to display the image or send it to a server for further processing.
+Make sure to include the AngularJS script file and the Cropper.js script file in your HTML file.
