@@ -1,9 +1,24 @@
-To apply Cropper.js and implement image cropper functionality, you can follow these steps:
+To use Cropper.js in your AngularJS project, you can follow these steps:
+
+1. Install Cropper.js using npm or bower:
+
+npm:
+
+```
+npm install cropperjs
+```
+
+bower:
+
+```
+bower install cropper
+```
 
 1. Include Cropper.js and its CSS file in your HTML file:
+
 ```
-<link rel="stylesheet" href="(link unavailable)">
-<script src="(link unavailable)"></script>
+<link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
+<script src="node_modules/cropperjs/dist/cropper.js"></script>
 ```
 
 1. Add an image element to your HTML file:
@@ -12,73 +27,36 @@ To apply Cropper.js and implement image cropper functionality, you can follow th
 <img id="image" src="your-image-url" alt="Image">
 ```
 
-1. Initialize Cropper.js on the image element:
+1. Create a directive in AngularJS to wrap the Cropper.js functionality:
 
 ```
-const image = document.getElementById('image');
-const cropper = new Cropper(image, {
-  aspectRatio: 16 / 9,
-  crop(event) {
-    console.log(event.detail.x);
-    console.log(event.detail.y);
-    console.log(event.detail.width);
-    console.log(event.detail.height);
-    console.log(event.detail.rotate);
-    console.log(event.detail.scaleX);
-    console.log(event.detail.scaleY);
-  }
+angular.module('yourApp').directive('imageCropper', function() {
+  return {
+    restrict: 'A',
+    link: function(scope, element) {
+      var cropper = new Cropper(element[0], {
+        aspectRatio: 16 / 9,
+        crop: function(event) {
+          console.log(event.detail.x);
+          console.log(event.detail.y);
+          console.log(event.detail.width);
+          console.log(event.detail.height);
+          console.log(event.detail.rotate);
+          console.log(event.detail.scaleX);
+          console.log(event.detail.scaleY);
+        }
+      });
+    }
+  };
 });
 ```
 
-1. You can then use the `getCroppedCanvas()` method to get the cropped image:
+1. Use the directive in your HTML file:
 
 ```
-const canvas = cropper.getCroppedCanvas();
+<img id="image" src="your-image-url" alt="Image" image-cropper>
 ```
 
-1. To display the cropped image, you can set it as the source of an image element:
+This will initialize Cropper.js on the image element and allow you to crop the image.
 
-```
-const croppedImage = document.getElementById('cropped-image');
-croppedImage.src = canvas.toDataURL();
-```
-
-Remember to replace "your-image-url" with the actual URL of your image. You can also customize the aspect ratio, crop box size, and other options according to your needs.
-
-Here's a working example:
-
-```
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="(link unavailable)">
-</head>
-<body>
-  <img id="image" src="your-image-url" alt="Image">
-  <button id="crop">Crop</button>
-  <img id="cropped-image" alt="Cropped Image">
-  <script src="(link unavailable)"></script>
-  <script>
-    const image = document.getElementById('image');
-    const cropper = new Cropper(image, {
-      aspectRatio: 16 / 9,
-      crop(event) {
-        console.log(event.detail.x);
-        console.log(event.detail.y);
-        console.log(event.detail.width);
-        console.log(event.detail.height);
-        console.log(event.detail.rotate);
-        console.log(event.detail.scaleX);
-        console.log(event.detail.scaleY);
-      }
-    });
-    document.getElementById('crop').addEventListener('click', () => {
-      const canvas = cropper.getCroppedCanvas();
-      const croppedImage = document.getElementById('cropped-image');
-      croppedImage.src = canvas.toDataURL();
-    });
-  </script>
-</body>
-</html>
-```
-https://shinerweb.com/how-to-crop-image-before-uploading-using-cropper-js/
+Note: Make sure to replace "your-image-url" with the actual URL of your image. Also, you can customize the Cropper.js options to fit your needs.
