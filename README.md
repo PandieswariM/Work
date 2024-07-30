@@ -1,73 +1,61 @@
-Here is the equivalent code in AngularJS:
+You can use the `$mdDialog` service in AngularJS to detect when the dialog is fully open. Here's an example:
 
 ```
-<!DOCTYPE html>
-<html lang="en" ng-app="myApp">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Cropper.js</title>
-  <link rel="stylesheet" href="../css/cropper.css">
-  <style>
-    .container {
-      margin: 20px auto;
-      max-width: 640px;
-    }
-    img {
-      max-width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <div class="container" ng-controller="CropperController">
-    <h1>Cropper with a range of aspect ratio</h1>
-    <div>
-      <img id="image" src="../images/picture.jpg" alt="Picture" ng-cropper="options">
-    </div>
-  </div>
-  <script src="../js/cropper.js"></script>
-  <script src="(link unavailable)"></script>
-  <script>
-    angular.module('myApp', []).controller('CropperController', function($scope) {
-      $scope.options = {
-        ready: function() {
-          var cropper = this.cropper;
-          var containerData = cropper.getContainerData();
-          var cropBoxData = cropper.getCropBoxData();
-          var aspectRatio = cropBoxData.width / cropBoxData.height;
-          var newCropBoxWidth;
-          if (aspectRatio < 0.5 || aspectRatio > 1.5) {
-            newCropBoxWidth = cropBoxData.height * ((0.5 + 1.5) / 2);
-            cropper.setCropBoxData({
-              left: (containerData.width - newCropBoxWidth) / 2,
-              width: newCropBoxWidth
-            });
-          }
-        },
-        cropmove: function() {
-          var cropper = this.cropper;
-          var cropBoxData = cropper.getCropBoxData();
-          var aspectRatio = cropBoxData.width / cropBoxData.height;
-          if (aspectRatio < 0.5) {
-            cropper.setCropBoxData({
-              width: cropBoxData.height * 0.5
-            });
-          } else if (aspectRatio > 1.5) {
-            cropper.setCropBoxData({
-              width: cropBoxData.height * 1.5
-            });
-          }
-        }
-      };
-    });
-  </script>
-</body>
-</html>
+$mdDialog.show({
+  // Your dialog options
+}).then(function() {
+  // Dialog is fully open, do some steps here
+  console.log('Dialog is fully open');
+});
 ```
 
-Note that I've added the `ng-app` directive to the `html` element, and the `ng-controller` directive to the `div` element containing the image. I've also defined a `CropperController` controller that sets up the Cropper.js options.
+If you want to perform actions when the dialog is opened, you can use the `open` event:
 
-I've also replaced the `window.addEventListener('DOMContentLoaded', ...)` code with the `ng-cropper` directive, which is a built-in AngularJS directive for working with Cropper.js.
+```
+$mdDialog.show({
+  // Your dialog options
+}).then(function() {
+  // Dialog is shown
+  console.log('Dialog is shown');
+}, function() {
+  // Dialog is hidden
+  console.log('Dialog is hidden');
+});
+```
 
-Make sure to include the AngularJS script file and the Cropper.js script file in your HTML file.
+Alternatively, you can use the `$mdDialog` events to detect when the dialog is fully open:
+
+```
+$rootScope.$on('$mdDialog.open', function() {
+  console.log('Dialog is opening');
+});
+
+$rootScope.$on('$mdDialog.opened', function() {
+  console.log('Dialog is fully open');
+});
+```
+
+Note that the `$mdDialog` events are emitted on the `$rootScope`, so you need to listen for them on the `$rootScope` or a child scope.
+
+When using Cropper.js, you need to set the `viewMode` option to `1` or `2` to enable cropping. Also, make sure to set the `aspectRatio` option to the desired ratio or `NaN` for free aspect ratio.
+
+Here's an example:
+
+```
+var image = document.getElementById('image');
+var cropper = new Cropper(image, {
+  viewMode: 1,
+  aspectRatio: NaN, // or set a specific ratio, e.g., 16/9
+  autoCropArea: 1,
+  cropBoxResizable: true,
+  cropBoxMovable: true,
+});
+```
+
+If the image still doesn't resize, try setting the `data-width` and `data-height` attributes on the image element:
+
+```
+<img id="image" src="your-image-url" data-width="100%" data-height="200px" />
+```
+
+This should allow the image to resize within the container while cropping.
