@@ -1,74 +1,45 @@
-To display the icons above the image, you can modify the HTML structure inside the `$mdDialog` template. Here's an updated example:
+Drag and drop functionality may not work on mobile devices due to the differences in touch events compared to desktop devices. To make drag and drop work on mobile devices, you can use a library like `angular-dragdrop` or `ngDraggable`.
+
+Here are some steps to help you get started:
+
+1. Include the library in your project:
 
 ```
-$mdDialog.show({
-  template: `
-    <md-dialog>
-      <md-dialog-content>
-        <div layout="row" layout-align="center center">
-          <md-icon md-svg-icon="delete" ng-click="deleteImage()"></md-icon>
-          <md-icon md-svg-icon="edit" ng-click="editImage()"></md-icon>
-        </div>
-        <img ng-src="image-url" style="width: 200px; height: 200px; margin-top: 10px;">
-      </md-dialog-content>
-    </md-dialog>
-  `,
-  controller: function($scope) {
-    $scope.deleteImage = function() {
-      // Delete image logic here
-    };
-    $scope.editImage = function() {
-      // Edit image logic here
-    };
-  }
-});
+<script src="(link unavailable)"></script>
 ```
 
-In this updated example, the icons are wrapped in a `div` element with `layout="row"` and `layout-align="center center"`, which centers them horizontally. The image is placed below the icons, with a margin-top of 10px to add some space between the icons and the image.
-
-Adjust the styling as needed to fit your requirements.
-
-
-
-....
-
-
-To display the icons below the image in the `$mdDialog` box, you can modify the HTML structure as follows:
+1. Add the library as a dependency in your AngularJS app:
 
 ```
-$mdDialog.show({
-  template: `
-    <md-dialog>
-      <md-dialog-content>
-        <img ng-src="image-url" style="width: 200px; height: 200px;">
-        <div layout="row" layout-align="center center">
-          <md-icon md-svg-icon="delete" ng-click="deleteImage()"></md-icon>
-          <md-icon md-svg-icon="edit" ng-click="editImage()"></md-icon>
-        </div>
-      </md-dialog-content>
-    </md-dialog>
-  `,
-  controller: function($scope) {
-    $scope.deleteImage = function() {
-      // Delete image logic here
-    };
-    $scope.editImage = function() {
-      // Edit image logic here
-    };
-  }
-});
+var app = angular.module('myApp', ['ngDragDrop']);
 ```
 
-In this updated example, the `img` element is placed above the `div` element containing the icons. This will display the image first, followed by the icons below it.
-
-If you want to add some space between the image and the icons, you can add a `margin-bottom` style to the `img` element or a `margin-top` style to the `div` element containing the icons. For example:
+1. Use the `ng-drag` and `ng-drop` directives to enable drag and drop functionality:
 
 ```
-<img ng-src="image-url" style="width: 200px; height: 200px; margin-bottom: 10px;">
+<div ng-drag="true">Drag me!</div>
+<div ng-drop="true">Drop here!</div>
 ```
 
-or
+1. Handle the drag and drop events using the `ng-dragstart`, `ng-dragend`, `ng-drop`, and `ng-dragover` directives:
 
 ```
-<div layout="row" layout-align="center center" style="margin-top: 10px;">
+<div ng-drag="true" ng-dragstart="onDragStart($event)">Drag me!</div>
+<div ng-drop="true" ng-drop="onDrop($event)">Drop here!</div>
 ```
+
+In your controller:
+
+```
+$scope.onDragStart = function($event) {
+  // Handle drag start event
+};
+
+$scope.onDrop = function($event) {
+  // Handle drop event
+};
+```
+
+Note that you may need to adjust the library and code to fit your specific requirements.
+
+Alternatively, you can also use `ngTouch` module to handle touch events and implement custom drag and drop functionality. However, using a library like `angular-dragdrop` or `ngDraggable` can simplify the process.
