@@ -1,116 +1,79 @@
-Drag and drop functionality may not work on mobile devices due to the differences in touch events compared to desktop devices. To make drag and drop work on mobile devices, you can use a library like `angular-dragdrop` or `ngDraggable`.
-
-Here are some steps to help you get started:
-
-1. Include the library in your project:
-
-```
-<script src="(link unavailable)"></script>
-```
-
-1. Add the library as a dependency in your AngularJS app:
-
-```
-var app = angular.module('myApp', ['ngDragDrop']);
-```
-
-1. Use the `ng-drag` and `ng-drop` directives to enable drag and drop functionality:
-
-```
-<div ng-drag="true">Drag me!</div>
-<div ng-drop="true">Drop here!</div>
-```
-
-1. Handle the drag and drop events using the `ng-dragstart`, `ng-dragend`, `ng-drop`, and `ng-dragover` directives:
-
-```
-<div ng-drag="true" ng-dragstart="onDragStart($event)">Drag me!</div>
-<div ng-drop="true" ng-drop="onDrop($event)">Drop here!</div>
-```
-
-In your controller:
-
-```
-$scope.onDragStart = function($event) {
-  // Handle drag start event
-};
-
-$scope.onDrop = function($event) {
-  // Handle drop event
-};
-```
-
-Note that you may need to adjust the library and code to fit your specific requirements.
-
-Alternatively, you can also use `ngTouch` module to handle touch events and implement custom drag and drop functionality. However, using a library like `angular-dragdrop` or `ngDraggable` can simplify the proces
-
-
-
-
-
-.....
-
-Here is an example code using AngularJS and `ngDraggable` library:
-
-HTML:
-
-```
-<div class="container" ng-controller="MyController">
-  <div class="box" ng-repeat="box in boxes" ng-draggable ng-model="box" ng-drop="true">
-    Box {{(link unavailable)}}
+implement drag-and-drop functionality for boxes within a container in an AngularJS mobile application, you can follow these steps:1. HTML StructureCreate a container with boxes inside it:<div class="container">
+  <div class="box" ng-repeat="box in boxes" ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }" 
+       ng-drag="true" ng-drag-data="box">
+    {{ box.id }}
   </div>
-</div>
-```
-
-CSS:
-
-```
-.container {
-  width: 800px;
-  height: 600px;
-  border: 1px solid black;
+</div>2. CSS StylesSet up the container and boxes' styles:.container {
   position: relative;
+  width: 250px;
+  height: 260px;
+  overflow-x: auto;
+  white-space: nowrap;
+  border: 1px solid #000;
 }
 
 .box {
+  position: absolute;
   width: 100px;
   height: 100px;
-  border: 1px solid black;
-  position: absolute;
+  background-color: lightblue;
+  border: 1px solid #000;
   cursor: move;
-}
-```
-
-JavaScript:
-
-```
-var app = angular.module('myApp', ['ngDraggable']);
-
-app.controller('MyController', function($scope) {
+}3. AngularJS ControllerManage the drag-and-drop functionality in your AngularJS controller:app.controller('BoxController', function($scope) {
+  // Initialize the boxes
   $scope.boxes = [
-    {id: 1, x: 10, y: 10},
-    {id: 2, x: 150, y: 10},
-    {id: 3, x: 10, y: 150},
-    {id: 4, x: 150, y: 150},
-    {id: 5, x: 300, y: 10}
+    { id: 1, left: 0, top: 0 },
+    { id: 2, left: 100, top: 0 },
+    { id: 3, left: 200, top: 0 },
+    { id: 4, left: 0, top: 100 },
+    { id: 5, left: 100, top: 100 }
   ];
+  
+  // Handle the drag start event
+  $scope.onDragStart = function(event, box) {
+    event.dataTransfer.setData('text', box.id);
+  };
 
-  $scope.$on('dragStart', function(event, data) {
-    console.log('Drag started:', data);
-  });
+  // Handle the drop event
+  $scope.onDrop = function(event, targetBox) {
+    event.preventDefault();
+    let boxId = event.dataTransfer.getData('text');
+    let draggedBox = $scope.boxes.find(box => box.id == boxId);
+    if (draggedBox) {
+      // Swap positions
+      let tempLeft = draggedBox.left;
+      let tempTop = draggedBox.top;
+      draggedBox.left = targetBox.left;
+      draggedBox.top = targetBox.top;
+      targetBox.left = tempLeft;
+      targetBox.top = tempTop;
+    }
+  };
 
-  $scope.$on('dragEnd', function(event, data) {
-    console.log('Drag ended:', data);
-  });
-
-  $scope.$on('drop', function(event, data) {
-    console.log('Dropped:', data);
-  });
-});
-```
-
-In this example, we have a container with 5 boxes that can be dragged and dropped. The `ng-draggable` directive makes the boxes draggable, and the `ng-drop` directive allows them to be dropped. The `ng-model` directive binds the box data to the scope.
-
-Note that you need to include the `ngDraggable` library in your HTML file and add it as a dependency in your AngularJS app.
-
-Also, you can adjust the CSS to fit your specific requirements.
+  // Allow drop
+  $scope.allowDrop = function(event) {
+    event.preventDefault();
+  };
+});4. AngularJS DirectivesUse AngularJS directives for drag and drop handling:<div class="container" 
+     ng-controller="BoxController">
+  <div class="box" 
+       ng-repeat="box in boxes" 
+       ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }"
+       ng-drag-start="onDragStart($event, box)"
+       ng-drop="onDrop($event, box)"
+       ng-drop-allow="allowDrop($event)">
+    {{ box.id }}
+  </div>
+</div>5. Additional LibrariesFor a more robust drag-and-drop experience, consider using a library like ngDraggable. It provides a more comprehensive set of features and better cross-browser support.Add ngDraggable to your project:<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ngDraggable/2.0.0/ngDraggable.min.js"></script>Include ngDraggable in your AngularJS module:var app = angular.module('myApp', ['ngDraggable']);Update your HTML to use ngDraggable directives:<div class="container" ng-controller="BoxController">
+  <div class="box" 
+       ng-repeat="box in boxes"
+       ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }"
+       ng-drag="true"
+       ng-drag-data="box"
+       ng-drag-start="onDragStart($event, box)"
+       ng-drop="true"
+       ng-drop-success="onDrop($event, box)">
+    {{ box.id }}
+  </div>
+</div>This setup allows you to drag and drop boxes inside the container, while also handling their positions effectively. Make sure to test on mobile devices to ensure a smooth user experience.
