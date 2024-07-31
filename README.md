@@ -80,7 +80,7 @@ implement drag-and-drop functionality for boxes within a container in an Angular
 
 
 
-
+```
 <div class="container" ng-controller="BoxController">
   <div class="box" 
        ng-repeat="box in boxes"
@@ -93,3 +93,7 @@ implement drag-and-drop functionality for boxes within a container in an Angular
     {{ box.id }}
   </div>
 </div>
+```
+```
+var app = angular.module('myApp', ['ngDraggable']);
+```
