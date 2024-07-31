@@ -1,123 +1,29 @@
-To achieve this, you can use the `draggable` directive in AngularJS and the `ng-mouseup` and `ng-mousedown` directives to handle the dragging and dropping of the boxes.
-
-Here's an example:
-
-HTML:
+To display the icons above the image, you can modify the HTML structure inside the `$mdDialog` template. Here's an updated example:
 
 ```
-<div class="big-container" ng-style="{height: '250px', width: '100%'}">
-  <div class="box-container" ng-repeat="box in boxes" ng-style="{height: '200px', width: '200px'}" ng-mousedown="startDrag($event, box)" ng-mouseup="stopDrag($event, box)" ng-class="{dragging: box.dragging}">
-    Box {{(link unavailable)}}
-  </div>
-</div>
-```
-
-JavaScript:
-
-```
-$scope.boxes = [
-  {id: 1, dragging: false},
-  {id: 2, dragging: false},
-  {id: 3, dragging: false},
-  {id: 4, dragging: false},
-  {id: 5, dragging: false}
-];
-
-$scope.startDrag = function($event, box) {
-  box.dragging = true;
-};
-
-$scope.stopDrag = function($event, box) {
-  box.dragging = false;
-};
-```
-
-CSS:
-
-```
-.big-container {
-  position: relative;
-}
-
-.box-container {
-  position: absolute;
-  cursor: move;
-}
-
-.dragging {
-  opacity: 0.5;
-}
-```
-
-In this example, the `ng-mousedown` directive starts the drag operation, and the `ng-mouseup` directive stops it. The `ng-style` directive sets the height and width of the boxes, and the `ng-class` directive applies the `dragging` class when the box is being dragged.
-
-Note that this is a basic example, and you may need to add additional logic to handle the actual dragging and dropping of the boxes, such as updating their positions and handling collisions.
-
-
-
-....
-
-Here is a basic AngularJS project code that demonstrates dragging and dropping boxes within a container:
-
-*index.html*
-```
-<!DOCTYPE html>
-<html ng-app="myApp">
-<head>
-	<title>Drag and Drop Boxes</title>
-	<link rel="stylesheet" href="style.css">
-</head>
-<body ng-controller="MainController">
-	<div class="container" ng-style="{height: '250px', width: '100%'}">
-		<div class="box" ng-repeat="box in boxes" ng-style="{height: '200px', width: '200px'}" ng-mousedown="startDrag($event, box)" ng-mouseup="stopDrag($event, box)" ng-class="{dragging: box.dragging}">
-			Box {{(link unavailable)}}
-		</div>
-	</div>
-	<script src="(link unavailable)"></script>
-	<script src="app.js"></script>
-</body>
-</html>
-```
-
-*app.js*
-```
-var app = angular.module('myApp', []);
-
-app.controller('MainController', function($scope) {
-	$scope.boxes = [
-		{id: 1, dragging: false},
-		{id: 2, dragging: false},
-		{id: 3, dragging: false},
-		{id: 4, dragging: false},
-		{id: 5, dragging: false}
-	];
-
-	$scope.startDrag = function($event, box) {
-		box.dragging = true;
-	};
-
-	$scope.stopDrag = function($event, box) {
-		box.dragging = false;
-	};
+$mdDialog.show({
+  template: `
+    <md-dialog>
+      <md-dialog-content>
+        <div layout="row" layout-align="center center">
+          <md-icon md-svg-icon="delete" ng-click="deleteImage()"></md-icon>
+          <md-icon md-svg-icon="edit" ng-click="editImage()"></md-icon>
+        </div>
+        <img ng-src="image-url" style="width: 200px; height: 200px; margin-top: 10px;">
+      </md-dialog-content>
+    </md-dialog>
+  `,
+  controller: function($scope) {
+    $scope.deleteImage = function() {
+      // Delete image logic here
+    };
+    $scope.editImage = function() {
+      // Edit image logic here
+    };
+  }
 });
 ```
 
-*style.css*
-```
-.container {
-	position: relative;
-}
+In this updated example, the icons are wrapped in a `div` element with `layout="row"` and `layout-align="center center"`, which centers them horizontally. The image is placed below the icons, with a margin-top of 10px to add some space between the icons and the image.
 
-.box {
-	position: absolute;
-	cursor: move;
-}
-
-.dragging {
-	opacity: 0.5;
-}
-```
-
-This code creates a container with 5 boxes that can be dragged and dropped within the container. The boxes have a height and width of 200px, and the container has a height of 250px and a width of 100%.
-
-Please note that this is a basic example and you may need to add additional logic to handle the actual dragging and dropping of the boxes, such as updating their positions and handling collisions.
+Adjust the styling as needed to fit your requirements.
