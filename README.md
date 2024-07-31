@@ -77,3 +77,19 @@ implement drag-and-drop functionality for boxes within a container in an Angular
     {{ box.id }}
   </div>
 </div>This setup allows you to drag and drop boxes inside the container, while also handling their positions effectively. Make sure to test on mobile devices to ensure a smooth user experience.
+
+
+
+
+<div class="container" ng-controller="BoxController">
+  <div class="box" 
+       ng-repeat="box in boxes"
+       ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }"
+       ng-drag="true"
+       ng-drag-data="box"
+       ng-drag-start="onDragStart($event, box)"
+       ng-drop="true"
+       ng-drop-success="onDrop($event, box)">
+    {{ box.id }}
+  </div>
+</div>
