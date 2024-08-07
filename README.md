@@ -50,3 +50,36 @@
 </body>
 </html>
 ```
+```
+If you want to open a URL when a user clicks a link in an HTML page, you can use the `href` attribute of the `<a>` (anchor) tag. Here’s how you can do it:
+
+### Basic HTML Link
+
+To create a clickable link that opens a URL in the browser, you can use the following HTML code:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open URL</title>
+</head>
+<body>
+    <a href="https://example.com" target="_blank">Click here to open the URL</a>
+</body>
+</html>
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open URL</title>
+</head>
+<body>
+    <a href="https://example.com" target="_blank">Click here to open the URL</a>
+</body>
+</html>
+```
