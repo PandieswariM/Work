@@ -1,99 +1,50 @@
-implement drag-and-drop functionality for boxes within a container in an AngularJS mobile application, you can follow these steps:1. HTML StructureCreate a container with boxes inside it:<div class="container">
-  <div class="box" ng-repeat="box in boxes" ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }" 
-       ng-drag="true" ng-drag-data="box">
-    {{ box.id }}
-  </div>
-</div>2. CSS StylesSet up the container and boxes' styles:.container {
-  position: relative;
-  width: 250px;
-  height: 260px;
-  overflow-x: auto;
-  white-space: nowrap;
-  border: 1px solid #000;
-}
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular_material/1.1.24/angular-material.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular_material/1.1.24/angular-material.min.js"></script>
+</head>
+<body>
+    <div ng-controller="MyController">
+        <md-autocomplete
+            md-no-cache="true"
+            md-selected-item="selectedCourier"
+            md-search-text="searchText"
+            md-items="item in filterItems(searchText)"
+            md-item-text="item.name"
+            placeholder="Search Courier">
+            <md-item-template>
+                <span md-highlight-text="searchText">{{item.name}}</span>
+            </md-item-template>
+            <md-not-found>
+                No matches found
+            </md-not-found>
+        </md-autocomplete>
+    </div>
 
-.box {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  background-color: lightblue;
-  border: 1px solid #000;
-  cursor: move;
-}3. AngularJS ControllerManage the drag-and-drop functionality in your AngularJS controller:app.controller('BoxController', function($scope) {
-  // Initialize the boxes
-  $scope.boxes = [
-    { id: 1, left: 0, top: 0 },
-    { id: 2, left: 100, top: 0 },
-    { id: 3, left: 200, top: 0 },
-    { id: 4, left: 0, top: 100 },
-    { id: 5, left: 100, top: 100 }
-  ];
-  
-  // Handle the drag start event
-  $scope.onDragStart = function(event, box) {
-    event.dataTransfer.setData('text', box.id);
-  };
+    <script>
+        angular.module('myApp', ['ngMaterial'])
+            .controller('MyController', function($scope) {
+                $scope.couriername = [
+                    { courierrecid: 1, name: "ram" },
+                    { courierrecid: 2, name: "raja" }
+                ];
 
-  // Handle the drop event
-  $scope.onDrop = function(event, targetBox) {
-    event.preventDefault();
-    let boxId = event.dataTransfer.getData('text');
-    let draggedBox = $scope.boxes.find(box => box.id == boxId);
-    if (draggedBox) {
-      // Swap positions
-      let tempLeft = draggedBox.left;
-      let tempTop = draggedBox.top;
-      draggedBox.left = targetBox.left;
-      draggedBox.top = targetBox.top;
-      targetBox.left = tempLeft;
-      targetBox.top = tempTop;
-    }
-  };
+                $scope.searchText = '';
+                $scope.selectedCourier = null;
 
-  // Allow drop
-  $scope.allowDrop = function(event) {
-    event.preventDefault();
-  };
-});4. AngularJS DirectivesUse AngularJS directives for drag and drop handling:<div class="container" 
-     ng-controller="BoxController">
-  <div class="box" 
-       ng-repeat="box in boxes" 
-       ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }"
-       ng-drag-start="onDragStart($event, box)"
-       ng-drop="onDrop($event, box)"
-       ng-drop-allow="allowDrop($event)">
-    {{ box.id }}
-  </div>
-</div>5. Additional LibrariesFor a more robust drag-and-drop experience, consider using a library like ngDraggable. It provides a more comprehensive set of features and better cross-browser support.Add ngDraggable to your project:<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ngDraggable/2.0.0/ngDraggable.min.js"></script>Include ngDraggable in your AngularJS module:var app = angular.module('myApp', ['ngDraggable']);Update your HTML to use ngDraggable directives:<div class="container" ng-controller="BoxController">
-  <div class="box" 
-       ng-repeat="box in boxes"
-       ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }"
-       ng-drag="true"
-       ng-drag-data="box"
-       ng-drag-start="onDragStart($event, box)"
-       ng-drop="true"
-       ng-drop-success="onDrop($event, box)">
-    {{ box.id }}
-  </div>
-</div>This setup allows you to drag and drop boxes inside the container, while also handling their positions effectively. Make sure to test on mobile devices to ensure a smooth user experience.
+                $scope.filterItems = function(query) {
+                    return query ? $scope.couriername.filter(createFilterFor(query)) : $scope.couriername;
+                };
 
-
-
-```
-<div class="container" ng-controller="BoxController">
-  <div class="box" 
-       ng-repeat="box in boxes"
-       ng-style="{ 'left': box.left + 'px', 'top': box.top + 'px' }"
-       ng-drag="true"
-       ng-drag-data="box"
-       ng-drag-start="onDragStart($event, box)"
-       ng-drop="true"
-       ng-drop-success="onDrop($event, box)">
-    {{ box.id }}
-  </div>
-</div>
-```
-```
-var app = angular.module('myApp', ['ngDraggable']);
-```
+                function createFilterFor(query) {
+                    var lowercaseQuery = angular.lowercase(query);
+                    return function filterFn(item) {
+                        return (item.name.toLowerCase().indexOf(lowercaseQuery) !== -1);
+                    };
+                }
+            });
+    </script>
+</body>
+</html>
