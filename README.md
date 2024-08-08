@@ -2,84 +2,99 @@
 <!DOCTYPE html>
 <html ng-app="myApp">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular_material/1.1.24/angular-material.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular_material/1.1.24/angular-material.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.12/angular-material.min.css">
 </head>
-<body>
-    <div ng-controller="MyController">
+<body ng-controller="MainController">
+
+  <md-button ng-click="showDialog($event)">Open Dialog</md-button>
+
+  <script type="text/ng-template" id="dialogTemplate.html">
+    <md-dialog aria-label="List dialog" ng-cloak>
+      <md-dialog-content>
+        <h2 class="md-title">Search Items</h2>
         <md-autocomplete
-            md-no-cache="true"
-            md-selected-item="selectedCourier"
-            md-search-text="searchText"
-            md-items="item in filterItems(searchText)"
-            md-item-text="item.name"
-            placeholder="Search Courier">
-            <md-item-template>
-                <span md-highlight-text="searchText">{{item.name}}</span>
-            </md-item-template>
-            <md-not-found>
-                No matches found
-            </md-not-found>
+          md-selected-item="dialog.selectedItem"
+          md-search-text="dialog.searchText"
+          md-items="item in dialog.querySearch(dialog.searchText)"
+          md-item-text="item.display"
+          md-min-length="0"
+          placeholder="Search for an item">
+          <md-item-template>
+            <span>{{item.display}}</span>
+          </md-item-template>
+          <md-not-found>
+            No matches found.
+          </md-not-found>
         </md-autocomplete>
-    </div>
+      </md-dialog-content>
+      <md-dialog-actions>
+        <md-button ng-click="dialog.closeDialog()">Close</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+  </script>
 
-    <script>
-        angular.module('myApp', ['ngMaterial'])
-            .controller('MyController', function($scope) {
-                $scope.couriername = [
-                    { courierrecid: 1, name: "ram" },
-                    { courierrecid: 2, name: "raja" }
-                ];
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.9/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-animate/1.6.9/angular-animate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-aria/1.6.9/angular-aria.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.12/angular-material.min.js"></script>
+  <script src="app.js"></script>
 
-                $scope.searchText = '';
-                $scope.selectedCourier = null;
-
-                $scope.filterItems = function(query) {
-                    return query ? $scope.couriername.filter(createFilterFor(query)) : $scope.couriername;
-                };
-
-                function createFilterFor(query) {
-                    var lowercaseQuery = angular.lowercase(query);
-                    return function filterFn(item) {
-                        return (item.name.toLowerCase().indexOf(lowercaseQuery) !== -1);
-                    };
-                }
-            });
-    </script>
 </body>
 </html>
 ```
 ```
-If you want to open a URL when a user clicks a link in an HTML page, you can use the `href` attribute of the `<a>` (anchor) tag. Here’s how you can do it:
+angular.module('myApp', ['ngMaterial'])
+  .controller('MainController', function($scope, $mdDialog) {
+    $scope.showDialog = function(ev) {
+      $mdDialog.show({
+        controller: DialogController,
+        templateUrl: 'dialogTemplate.html',
+        parent: angular.element(document.body),
+        targetEvent: ev,
+        clickOutsideToClose: true,
+        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+      });
+    };
 
-### Basic HTML Link
+    function DialogController($scope, $mdDialog) {
+      var dialog = this;
+      
+      dialog.searchText = '';
+      dialog.selectedItem = null;
 
-To create a clickable link that opens a URL in the browser, you can use the following HTML code:
+      // Example list of items
+      dialog.items = [
+        { display: 'Apple' },
+        { display: 'Banana' },
+        { display: 'Cherry' },
+        { display: 'Date' },
+        { display: 'Elderberry' }
+      ];
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open URL</title>
-</head>
-<body>
-    <a href="https://example.com" target="_blank">Click here to open the URL</a>
-</body>
-</html>
+      // Simple search function
+      dialog.querySearch = function(searchText) {
+        return searchText ? dialog.items.filter(createFilterFor(searchText)) : dialog.items;
+      };
 
-```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open URL</title>
-</head>
-<body>
-    <a href="https://example.com" target="_blank">Click here to open the URL</a>
-</body>
-</html>
-```
+      // Filter function
+      function createFilterFor(query) {
+        var lowercaseQuery = angular.lowercase(query);
+        return function filterFn(item) {
+          return angular.lowercase(item.display).indexOf(lowercaseQuery) !== -1;
+        };
+      }
+
+      dialog.closeDialog = function() {
+        $mdDialog.hide();
+      };
+
+      // Manually trigger the digest cycle on search text change
+      $scope.$watch('dialog.searchText', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.$applyAsync();
+        }
+      });
+    }
+  });
+
+  ```
