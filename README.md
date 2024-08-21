@@ -1,83 +1,31 @@
-
 ```
-<div class="scroll-container" ng-controller="TodoController">
-  <ul id="todo-list" class="todo-list">
-    <li ng-repeat="item in todoList" 
-        draggable="true" 
-        ng-dragstart="onDragStart($event, item)" 
-        ng-dragend="onDragEnd($event)"
-        ng-drag="onDrag($event)">
-      {{ item }}
-    </li>
-  </ul>
+
+<div id="scroll-box" style="overflow-x: scroll; white-space: nowrap; width: 300px;">
+  <div style="display: inline-block; width: 1000px;">
+    <!-- Your content here -->
+    <div style="display: inline-block; width: 300px; height: 100px; background-color: red;"></div>
+    <div style="display: inline-block; width: 300px; height: 100px; background-color: blue;"></div>
+    <div style="display: inline-block; width: 300px; height: 100px; background-color: green;"></div>
+  </div>
 </div>
 
-<div class="scroll-container" ng-controller="TodoController">
-  <ul id="todo-list" class="todo-list">
-    <li ng-repeat="item in todoList" 
-        draggable="true" 
-        ng-dragstart="onDragStart($event, item)" 
-        ng-dragend="onDragEnd($event)"
-        ng-drag="onDrag($event)">
-      {{ item }}
-    </li>
-  </ul>
-</div>
-.scroll-container {
-  height: 400px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-}
+app.controller('ScrollController', function($scope, $interval) {
+  let scrollDirection = 'right';
+  const scrollSpeed = 5; // Adjust the speed here
+  const scrollBox = document.getElementById('scroll-box');
 
-.todo-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.todo-list li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  cursor: move;
-}
-
-app.controller('TodoController', function($scope, $timeout) {
-  $scope.todoList = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
-
-  let scrollInterval;
-  const scrollSpeed = 5;
-  const edgeThreshold = 50;
-  const scrollContainer = document.querySelector('.scroll-container');
-
-  // Start drag event
-  $scope.onDragStart = function(event, item) {
-    // Set the dragged item (you can store this to handle drop logic)
-    event.dataTransfer.setData('text', item);
-  };
-
-  // Handle drag movement to auto-scroll
-  $scope.onDrag = function(event) {
-    const boundingRect = scrollContainer.getBoundingClientRect();
-    const pointerY = event.clientY;
-
-    if (pointerY - boundingRect.top < edgeThreshold) {
-      scrollInterval = $timeout(function scrollUp() {
-        scrollContainer.scrollTop -= scrollSpeed;
-        scrollInterval = $timeout(scrollUp, 10);
-      }, 10);
-    } else if (boundingRect.bottom - pointerY < edgeThreshold) {
-      scrollInterval = $timeout(function scrollDown() {
-        scrollContainer.scrollTop += scrollSpeed;
-        scrollInterval = $timeout(scrollDown, 10);
-      }, 10);
+  $interval(function() {
+    if (scrollDirection === 'right') {
+      scrollBox.scrollLeft += scrollSpeed;
+      if (scrollBox.scrollLeft + scrollBox.clientWidth >= scrollBox.scrollWidth) {
+        scrollDirection = 'left'; // Change direction at the end
+      }
     } else {
-      $timeout.cancel(scrollInterval);
+      scrollBox.scrollLeft -= scrollSpeed;
+      if (scrollBox.scrollLeft <= 0) {
+        scrollDirection = 'right'; // Change direction at the beginning
+      }
     }
-  };
-
-  // Stop scrolling when drag ends
-  $scope.onDragEnd = function(event) {
-    $timeout.cancel(scrollInterval);
-  };
+  }, 30); // Adjust the interval here
 });
 ```
