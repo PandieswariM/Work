@@ -1,31 +1,55 @@
 ```
-
-<div id="scroll-box" style="overflow-x: scroll; white-space: nowrap; width: 300px;">
-  <div style="display: inline-block; width: 1000px;">
-    <!-- Your content here -->
-    <div style="display: inline-block; width: 300px; height: 100px; background-color: red;"></div>
-    <div style="display: inline-block; width: 300px; height: 100px; background-color: blue;"></div>
-    <div style="display: inline-block; width: 300px; height: 100px; background-color: green;"></div>
+<div id="scrollContainer" ng-controller="DragController">
+  <div class="draggable-item" 
+       ng-repeat="item in items" 
+       ng-draggable 
+       drag-start="onDragStart($event, item)" 
+       drag="onDrag($event, item)" 
+       drag-end="onDragEnd($event, item)">
+    {{item}}
   </div>
 </div>
 
-app.controller('ScrollController', function($scope, $interval) {
-  let scrollDirection = 'right';
-  const scrollSpeed = 5; // Adjust the speed here
-  const scrollBox = document.getElementById('scroll-box');
+app.controller('DragController', function($scope, $element, $timeout) {
+    const scrollContainer = document.getElementById('scrollContainer');
 
-  $interval(function() {
-    if (scrollDirection === 'right') {
-      scrollBox.scrollLeft += scrollSpeed;
-      if (scrollBox.scrollLeft + scrollBox.clientWidth >= scrollBox.scrollWidth) {
-        scrollDirection = 'left'; // Change direction at the end
-      }
-    } else {
-      scrollBox.scrollLeft -= scrollSpeed;
-      if (scrollBox.scrollLeft <= 0) {
-        scrollDirection = 'right'; // Change direction at the beginning
-      }
+    let autoScrollInterval;
+    const scrollSpeed = 5;
+
+    $scope.onDragStart = function(event, item) {
+        clearInterval(autoScrollInterval); // Stop any existing scroll
+    };
+
+    $scope.onDrag = function(event, item) {
+        const dragItemRect = event.element[0].getBoundingClientRect();
+        const containerRect = scrollContainer.getBoundingClientRect();
+
+        if (dragItemRect.right > containerRect.right - 20) {
+            autoScroll('right');
+        } else if (dragItemRect.left < containerRect.left + 20) {
+            autoScroll('left');
+        } else {
+            clearInterval(autoScrollInterval);
+        }
+    };
+
+    $scope.onDragEnd = function(event, item) {
+        clearInterval(autoScrollInterval);
+    };
+
+    function autoScroll(direction) {
+        if (autoScrollInterval) return;
+
+        autoScrollInterval = $timeout(function scroll() {
+            if (direction === 'right') {
+                scrollContainer.scrollLeft += scrollSpeed;
+            } else if (direction === 'left') {
+                scrollContainer.scrollLeft -= scrollSpeed;
+            }
+
+            autoScrollInterval = $timeout(scroll, 20); // repeat scroll every 20ms
+        }, 20);
     }
-  }, 30); // Adjust the interval here
 });
+
 ```
