@@ -1,61 +1,83 @@
-```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Box Layout</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-<div class="big-box">
-    <div class="small-box"></div>
-    <div class="icon">+</div>
-    <div class="small-box"></div>
-    <div class="icon">=</div>
-    <div class="small-box"></div>
+```
+<div class="scroll-container" ng-controller="TodoController">
+  <ul id="todo-list" class="todo-list">
+    <li ng-repeat="item in todoList" 
+        draggable="true" 
+        ng-dragstart="onDragStart($event, item)" 
+        ng-dragend="onDragEnd($event)"
+        ng-drag="onDrag($event)">
+      {{ item }}
+    </li>
+  </ul>
 </div>
 
-</body>
-</html>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+<div class="scroll-container" ng-controller="TodoController">
+  <ul id="todo-list" class="todo-list">
+    <li ng-repeat="item in todoList" 
+        draggable="true" 
+        ng-dragstart="onDragStart($event, item)" 
+        ng-dragend="onDragEnd($event)"
+        ng-drag="onDrag($event)">
+      {{ item }}
+    </li>
+  </ul>
+</div>
+.scroll-container {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
 }
 
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
+.todo-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
-.big-box {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 80%;
-    height: 200px;
-    background-color: #fff;
-    border: 2px solid #000;
-    padding: 20px;
+.todo-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: move;
 }
 
-.small-box {
-    flex: 1;
-    background-color: lightblue;
-    height: 100%;
-    border: 2px solid #000;
-    margin: 0 10px;
-}
+app.controller('TodoController', function($scope, $timeout) {
+  $scope.todoList = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 
-.icon {
-    font-size: 2em;
-    font-weight: bold;
-    margin: 0 10px;
-}
+  let scrollInterval;
+  const scrollSpeed = 5;
+  const edgeThreshold = 50;
+  const scrollContainer = document.querySelector('.scroll-container');
+
+  // Start drag event
+  $scope.onDragStart = function(event, item) {
+    // Set the dragged item (you can store this to handle drop logic)
+    event.dataTransfer.setData('text', item);
+  };
+
+  // Handle drag movement to auto-scroll
+  $scope.onDrag = function(event) {
+    const boundingRect = scrollContainer.getBoundingClientRect();
+    const pointerY = event.clientY;
+
+    if (pointerY - boundingRect.top < edgeThreshold) {
+      scrollInterval = $timeout(function scrollUp() {
+        scrollContainer.scrollTop -= scrollSpeed;
+        scrollInterval = $timeout(scrollUp, 10);
+      }, 10);
+    } else if (boundingRect.bottom - pointerY < edgeThreshold) {
+      scrollInterval = $timeout(function scrollDown() {
+        scrollContainer.scrollTop += scrollSpeed;
+        scrollInterval = $timeout(scrollDown, 10);
+      }, 10);
+    } else {
+      $timeout.cancel(scrollInterval);
+    }
+  };
+
+  // Stop scrolling when drag ends
+  $scope.onDragEnd = function(event) {
+    $timeout.cancel(scrollInterval);
+  };
+});
 ```
