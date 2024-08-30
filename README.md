@@ -1,107 +1,298 @@
 ```
-Hi Anna, I’m working on the task. you told me to inform you before starting, so I’m letting you know now
-```
-```
 <!DOCTYPE html>
-<html ng-app="myApp">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>AngularJS Placeholder Ellipsis</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.12/angular-material.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent Information</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body ng-controller="MainCtrl as vm">
-
-  <div layout="column" layout-align="center center" style="height: 100vh;">
-    <md-input-container>
-      <label>Label Text</label>
-      <input type="text" ng-model="vm.inputText" class="ellipsis-placeholder" placeholder-directive placeholder="This is a very long placeholder text that should be truncated with an ellipsis if it exceeds the input width">
-    </md-input-container>
-  </div>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-animate/1.7.9/angular-animate.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-aria/1.7.9/angular-aria.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.12/angular-material.min.js"></script>
-  <script src="app.js"></script>
+<body>
+    <div class="custom-card-container">
+        <div class="custom-card">
+            <div class="date-section">
+                <div class="date-item">
+                    <span class="date-label">Start Date:</span>
+                    <span class="date-value">01/01/2024</span>
+                </div>
+                <div class="date-item">
+                    <span class="date-label">End Date:</span>
+                    <span class="date-value">31/12/2024</span>
+                </div>
+                <div class="inr-item">
+                    <span class="inr-label">Total INR:</span>
+                    <span class="inr-value">₹ 15,000</span>
+                </div>
+            </div>
+            <div class="points-section">
+                <div class="points-star">
+                    <span class="points-value">120</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 ```
-
 ```
-// Define the AngularJS application module
-angular.module('myApp', ['ngMaterial'])
-
-// Define the main controller
-.controller('MainCtrl', function() {
-  var vm = this;
-
-  // Initialize the model
-  vm.inputText = '';
-})
-
-// Directive to handle custom placeholder behavior
-.directive('placeholderDirective', function() {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      // Create a span element to act as the fake placeholder
-      var fakePlaceholder = angular.element('<span class="fake-placeholder">' + attrs.placeholder + '</span>');
-      
-      // Insert the fake placeholder into the DOM
-      element.parent().append(fakePlaceholder);
-
-      // Event listeners to show/hide the fake placeholder based on input focus and content
-      element.on('focus', function() {
-        fakePlaceholder.addClass('active');
-      });
-
-      element.on('blur', function() {
-        if (!element.val()) {
-          fakePlaceholder.removeClass('active');
-        }
-      });
-
-      // Check the value on input change to control the visibility of the placeholder
-      element.on('input', function() {
-        if (element.val()) {
-          fakePlaceholder.addClass('active');
-        } else {
-          fakePlaceholder.removeClass('active');
-        }
-      });
-    }
-  };
-});
-
-```
-```
-/* CSS to ensure the input field and placeholder text truncate with an ellipsis */
-.ellipsis-placeholder {
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  position: relative;
+/* styles.css */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-/* Custom fake placeholder style */
-.fake-placeholder {
-  position: absolute;
-  top: 12px; /* Adjust based on input padding */
-  left: 10px;
-  pointer-events: none;
-  color: #9e9e9e;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: calc(100% - 20px); /* Ensures it doesn't overflow the input */
-  transition: 0.3s ease;
+.custom-card-container {
+    width: 350px;
 }
 
-/* Active state when input is focused or has content */
-.fake-placeholder.active {
-  opacity: 0; /* Hide the placeholder when the input has focus or content */
+.custom-card {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date-section {
+    text-align: left;
+}
+
+.date-item, .inr-item {
+    margin-bottom: 10px;
+}
+
+.date-label, .inr-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.date-value, .inr-value {
+    font-weight: bold;
+    color: #333;
+}
+
+.points-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.points-star {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+    background-color: #ffcc00;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.points-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+```
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent Information</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <h2>Consent Information</h2>
+            <div class="card-content">
+                <div class="info-item">
+                    <i class="icon">&#128197;</i>
+                    <span class="label">Start Date:</span>
+                    <span class="value">01/01/2024</span>
+                </div>
+                <div class="info-item">
+                    <i class="icon">&#128197;</i>
+                    <span class="label">End Date:</span>
+                    <span class="value">31/12/2024</span>
+                </div>
+                <div class="info-item">
+                    <i class="icon">&#11088;</i>
+                    <span class="label">Total Target Points:</span>
+                    <span class="value">120</span>
+                </div>
+                <div class="info-item">
+                    <i class="icon">&#8377;</i>
+                    <span class="label">Total INR:</span>
+                    <span class="value">₹ 15,000</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+```
+```
+/* styles.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.card-container {
+    width: 350px;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #444;
+    font-weight: 600;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.icon {
+    font-size: 18px;
+    color: #6a11cb;
+    margin-right: 10px;
+}
+
+.label {
+    font-weight: 600;
+    color: #555;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.value {
+    color: #333;
+}
+```
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent Information</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Consent Information</h2>
+            <div class="info">
+                <div class="item">
+                    <span class="label">Start Date:</span>
+                    <span class="value">01/01/2024</span>
+                </div>
+                <div class="item">
+                    <span class="label">End Date:</span>
+                    <span class="value">31/12/2024</span>
+                </div>
+                <div class="item">
+                    <span class="label">Total Target Points:</span>
+                    <span class="value">120</span>
+                </div>
+                <div class="item">
+                    <span class="label">Total INR:</span>
+                    <span class="value">₹ 15,000</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+```
+```
+/* styles.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.info {
+    text-align: left;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.label {
+    font-weight: bold;
+    color: #555;
+}
+
+.value {
+    color: #777;
 }
 ```
