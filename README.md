@@ -1,142 +1,73 @@
+To validate a URL when a user clicks an `<a>` tag in AngularJS and handle the link accordingly (either opening the link if valid or showing a toast message if invalid), follow these steps:
+
+### Step 1: Create a method in the controller to validate the URL and handle the click
+You can create a method in your AngularJS controller that will validate the URL using a regular expression and perform the action based on the result.
+
+### Example:
+
+#### HTML:
+```html
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+  <title>URL Validation with Toast in AngularJS</title>
+  <!-- Include any required CSS for toast (you can use Angular Material or any other toast library) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.12/angular-material.min.css">
+</head>
+<body ng-controller="LinkController">
+
+  <a href="#" ng-click="validateAndOpenLink('https://example.com')">Click here to open URL</a>
+
+  <!-- Toast notification container -->
+  <md-toast ng-if="showToast">
+    <span>{{ toastMessage }}</span>
+  </md-toast>
+
+  <!-- AngularJS and Angular Material scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.12/angular-material.min.js"></script>
+
+  <script>
+    angular.module('myApp', ['ngMaterial'])
+      .controller('LinkController', function($scope, $window, $timeout, $mdToast) {
+        
+        // Regular expression for validating URLs
+        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
+        // Method to validate and open link
+        $scope.validateAndOpenLink = function(url) {
+          if (urlPattern.test(url)) {
+            // If URL is valid, open it in a new tab
+            $window.open(url, '_blank');
+          } else {
+            // If URL is invalid, show a toast message
+            $scope.toastMessage = 'Invalid URL';
+            $scope.showToast = true;
+
+            // Hide toast after 3 seconds
+            $timeout(function() {
+              $scope.showToast = false;
+            }, 3000);
+          }
+        };
+      });
+  </script>
+</body>
+</html>
 ```
-DELIMITER $$
-DROP PROCEDURE IF EXISTS sp_APP_GetConsentMGTAcptCustomer$$
-/*********************************************************************************************
-* Created By    : Pandieswari M - Annam Software (P) Ltd.
-* Name          : sp_APP_GetConsentMGTAcptCustomer
-* Created On    : 23/08/2024
-* Description   : To get consent management accepted retailer
-* Reviewed By   :
-**********************************************************************************************/
 
-CREATE PROCEDURE `sp_APP_GetConsentMGTAcptCustomer`(
-     IN iConsentMGTRecId    INT(11),
-     IN iAppUserRecId       INT(11),
-     IN sAppType            VARCHAR(20),
-     IN sFilterStatus       VARCHAR(10),
-     IN iFinancialYearRecId INT(11)
-)
-BEGIN
-    DECLARE sTerritoryRecId     VARCHAR(1000) DEFAULT '';
-    DECLARE sCustTypeCondition  VARCHAR(100) DEFAULT '';
-    DECLARE sCondition          TEXT DEFAULT '';
-    DECLARE sCustCondition      TEXT DEFAULT '';
-    DECLARE sStsCondition       TEXT DEFAULT '';
-    DECLARE sCode               TEXT DEFAULT '';
-    DECLARE bIsAllLocation      INT DEFAULT 0;
-    DECLARE sFOTRecId           VARCHAR(1000) DEFAULT '';
-    DECLARE sMDOType            VARCHAR(20) DEFAULT '';
-    DECLARE query               TEXT;
+### Explanation:
+1. **ng-click**: The `<a>` tag uses `ng-click` to call the `validateAndOpenLink` method and passes the URL to validate.
+   
+2. **validateAndOpenLink**:
+    - It uses a regular expression (`urlPattern`) to validate the URL.
+    - If valid, it opens the URL in a new tab using `$window.open(url, '_blank')`.
+    - If invalid, it displays a toast message using `$mdToast`.
 
-    -- Fetch necessary data
-    SELECT Code INTO sCode
-    FROM ConsentMGT AS CM
-    LEFT JOIN ConsentMGTCustType AS CMT ON CMT.ConsentMGTCustTypeRecId = CM.ConsentMGTCustTypeRecId
-    WHERE CM.ConsentMGTRecId = iConsentMGTRecId;
+3. **Toast Notification**:
+    - Angular Material's toast (`<md-toast>`) is displayed for 3 seconds when the URL is invalid.
 
-    SELECT COUNT(*) INTO bIsAllLocation
-    FROM ConsentMGTRule
-    WHERE ConsentMGTRecId = iConsentMGTRecId AND IFNULL(IsAllLocation, 0) = 1;
+4. **Libraries**:
+   - AngularJS and Angular Material are included for basic toast notifications. You can replace Angular Material with any other toast library if preferred.
 
-    IF sCode NOT IN ('DT', 'ALL', 'FUPLD') THEN
-        SET sCustTypeCondition = CONCAT(' AND RT.Code IN ("', sCode, '") ');
-    END IF;
-
-    -- Determine app type and set conditions
-    CASE sAppType
-        WHEN 'TSM' THEN
-            SELECT fn_APP_GetTerritoryForUser(iAppUserRecId) INTO sTerritoryRecId;
-            SET sCustCondition = CONCAT(sCondition, ' AND CCT.Code = "FUPLD"');
-            SET sCondition = CONCAT(sCondition, ' AND CCT.Code != "FUPLD"');
-        WHEN 'MDO' THEN
-            SELECT fn_APP_GetMDOType(iAppUserRecId) INTO sMDOType;
-            IF sMDOType = 'FS' THEN
-                SELECT fn_APP_GetMDOTerritoryForUser(iAppUserRecId) INTO sTerritoryRecId;
-            ELSE
-                SELECT fn_APP_GetFOTForUser(iAppUserRecId) INTO sFOTRecId;
-            END IF;
-            SET sCustCondition = CONCAT(sCondition, ' AND CCT.Code = "FUPLD"');
-            SET sCondition = CONCAT(sCondition, ' AND (CCT.Code = "ALL")');
-    END CASE;
-
-    -- Dynamic SQL for Retailer/Distributor Insertion
-    IF sTerritoryRecId <> '' THEN
-        SET @Query = CONCAT('INSERT INTO tmpCustomerDetails (RetailerRecId, Code, ConsentMGTRecId)
-            SELECT R.RetailerRecId, RT.Code, ', iConsentMGTRecId, '
-            FROM Retailer AS R
-            LEFT JOIN RetailerType AS RT ON R.RetailerTypeRecId = RT.RetailerTypeRecId
-            WHERE IFNULL(R.IsDeleted, 0) = 0 AND IFNULL(R.IsActive, 0) = 1 AND R.TerritoryRecId IN (', sTerritoryRecId, ')', sCustTypeCondition, '
-            GROUP BY R.RetailerRecId ORDER BY R.BusinessName');
-
-        PREPARE stmt FROM @Query;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-        IF sCode IN ('DT', 'ALL', 'FUPLD') THEN
-            SET @Query = CONCAT('INSERT INTO tmpCustomerDetails (DistributorRecId, Code, ConsentMGTRecId)
-                SELECT D.DistributorRecId, "DT", ', iConsentMGTRecId, '
-                FROM Distributor AS D
-                WHERE IFNULL(D.IsDeleted, 0) = 0 AND IFNULL(D.IsActive, 0) = 1 AND D.TerritoryRecId IN (', sTerritoryRecId, ')
-                GROUP BY D.DistributorRecId ORDER BY D.BusinessName');
-
-            PREPARE stmt FROM @Query;
-            EXECUTE stmt;
-            DEALLOCATE PREPARE stmt;
-        END IF;
-    ELSEIF sFOTRecId <> '' THEN
-        SET @Query = CONCAT('INSERT INTO tmpCustomerDetails (RetailerRecId, Code)
-            SELECT R.RetailerRecId, RT.Code
-            FROM Retailer AS R
-            LEFT JOIN RetailerType AS RT ON R.RetailerTypeRecId = RT.RetailerTypeRecId
-            LEFT JOIN CustomerFOTLink AS CFL ON CFL.RetailerRecId = R.RetailerRecId
-            WHERE IFNULL(R.IsDeleted, 0) = 0 AND IFNULL(R.IsActive, 0) = 1 AND CFL.FOTRecId IN (', sFOTRecId, ')', sCustTypeCondition, '
-            GROUP BY R.RetailerRecId ORDER BY R.BusinessName');
-
-        PREPARE stmt FROM @Query;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-
-        IF sCode IN ('DT', 'ALL', 'FUPLD') THEN
-            SET @Query = CONCAT('INSERT INTO tmpCustomerDetails (DistributorRecId, Code)
-                SELECT D.DistributorRecId, "DT"
-                FROM Distributor AS D
-                LEFT JOIN CustomerFOTLink AS CFL ON CFL.DistributorRecId = D.DistributorRecId
-                WHERE IFNULL(D.IsDeleted, 0) = 0 AND IFNULL(D.IsActive, 0) = 1 AND CFL.FOTRecId IN (', sFOTRecId, ')
-                GROUP BY D.DistributorRecId ORDER BY D.BusinessName');
-
-            PREPARE stmt FROM @Query;
-            EXECUTE stmt;
-            DEALLOCATE PREPARE stmt;
-        END IF;
-    END IF;
-
-    -- Insert into tmpCustomerRules table
-    INSERT INTO tmpCustomerRules (RetailerRecId, DistributorRecId, TerritoryRecId, RegionRecId, ZoneRecId, ConsentMGTRecId, Code)
-    SELECT tmp.RetailerRecId, tmp.DistributorRecId, T.TerritoryRecId, T.RegionRecId, RG.ZoneRecId, tmp.ConsentMGTRecId, tmp.Code
-    FROM tmpCustomerDetails AS tmp
-    LEFT JOIN Retailer AS R ON R.RetailerRecId = tmp.RetailerRecId
-    LEFT JOIN Distributor AS D ON D.DistributorRecId = tmp.DistributorRecId
-    LEFT JOIN Territory AS T ON T.TerritoryRecId = R.TerritoryRecId OR T.TerritoryRecId = D.TerritoryRecId
-    LEFT JOIN Region AS RG ON RG.RegionRecId = T.RegionRecId
-    WHERE (tmp.RetailerRecId IS NOT NULL AND R.RetailerRecId IS NOT NULL) 
-          OR (tmp.DistributorRecId IS NOT NULL AND D.DistributorRecId IS NOT NULL);
-
-    -- Add index to tmpCustomerRules table
-    ALTER TABLE tmpCustomerRules ADD INDEX IX_tmpCustomerRules_TerritoryRecId(TerritoryRecId), ADD INDEX IX_tmpCustomerRules_RegionRecId(RegionRecId), ADD INDEX IX_tmpCustomerRules_ZoneRecId(ZoneRecId);
-
-    -- Handle IsAccepted Condition
-    IF sFilterStatus <> '' THEN
-        SET sStsCondition = CASE sFilterStatus
-                                WHEN 'ACPT' THEN ' AND IsAccepted = 1'
-                                WHEN 'NACPT' THEN ' AND IsAccepted = 0'
-                                ELSE ''
-                            END;
-    END IF;
-
-    -- Update temporary table with total values
-    SET SQL_SAFE_UPDATES = 0;
-    UPDATE tmpConsentMGT AS tmp
-    LEFT JOIN CustomerTarget AS CT ON CT.UserRecId = tmp.CustomerRecId AND CT.AppType = tmp.CustomerCode
-    ```
-    SET TotalTargetkgl = COALESCE(CT.Points, 0), TotalTargetINR = COALESCE(CT.Value, 0)
-    WHERE tmp.CustomerRecId IS NOT NULL AND CT.F
+This implementation allows you to handle URL validation and display a toast message for invalid URLs, all while preventing the invalid link from opening.
