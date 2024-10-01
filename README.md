@@ -1,1 +1,1 @@
-"After this field, there's a dropdown, so the focus moves to the next text field."
+They mentioned that the aspect ratio is missing, and the image is not clear. I have set `object-fit` for this issue. which one should be set in this case?
