@@ -14,3 +14,17 @@ SELECT
     ) AS formatted_value
 FROM numbers;
 ```
+
+```
+SELECT 
+    value,
+    CONCAT(
+        ROUND(value / 
+            IF(value >= 1000000, 1000000, 
+                IF(value >= 100000, 100000, 1000)), 
+            2), 
+        IF(value >= 1000000, ' mill', 
+            IF(value >= 100000, ' lac', ' k'))
+    ) AS formatted_value
+FROM numbers;
+```
