@@ -1,5 +1,13 @@
+
 ```
 SELECT FORMAT(ROUND(467886.468, 2), 2) AS formatted_number;
+
+
+SELECT 
+    IF(value >= 1000000, CONCAT(ROUND(value / 1000000, 2), ' m'), 
+    IF(value >= 100000, CONCAT(ROUND(value / 100000, 2), ' lac'), 
+    IF(value >= 1000, CONCAT(ROUND(value / 1000, 2), ' k'), value))) AS formatted_value
+FROM (SELECT 467886.468 AS value) AS t;  -- Replace 467886.468 with your desired value
 ```
 
 
