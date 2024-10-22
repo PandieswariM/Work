@@ -1,4 +1,9 @@
 ```
+SELECT FORMAT(ROUND(467886.468, 2), 2) AS formatted_number;
+```
+
+
+```
 Your order (ID: [Your Order ID]) containing apples and oranges has been dispatched and is on its way!
 ```
 ```
