@@ -50,3 +50,38 @@ $scope.focusNext = function(event, nextFieldId) {
     }
 };
 ```
+
+```
+<!-- Numeric Input Field with tabindex and Custom Directive -->
+<input type="number" inputmode="numeric" enterkeyhint="next" tabindex="1" ng-model="numericField" on-enter="focusNext('dropdownField')">
+
+<!-- Dropdown Field with tabindex -->
+<select id="dropdownField" tabindex="2" ng-model="dropdownField">
+    <option value="">Select an option</option>
+    <option value="option1">Option 1</option>
+    <option value="option2">Option 2</option>
+</select>
+
+<!-- Text Field with tabindex -->
+<input type="text" tabindex="3" ng-model="textField">
+```
+```
+app.directive('onEnter', function() {
+    return function(scope, element, attrs) {
+        element.bind('keydown keypress', function(event) {
+            if (event.key === 'Enter') { // Check if Enter is pressed
+                event.preventDefault();
+                // Call the function provided in the attribute
+                scope.$apply(function() {
+                    scope.$eval(attrs.onEnter);
+                });
+            }
+        });
+    };
+});
+
+// In your AngularJS controller
+$scope.focusNext = function(nextFieldId) {
+    document.getElementById(nextFieldId).focus(); // Set focus to the dropdown field
+};
+```
