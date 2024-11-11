@@ -28,3 +28,25 @@ angular.module('myApp', [])
     };
 });
 ```
+```
+<!-- Numeric Input Field with enterkeyhint -->
+<input type="number" inputmode="numeric" enterkeyhint="next" ng-model="numericField" ng-keydown="focusNext($event, 'dropdownField')">
+
+<!-- Dropdown Field -->
+<select id="dropdownField" ng-model="dropdownField">
+    <option value="">Select an option</option>
+    <option value="option1">Option 1</option>
+    <option value="option2">Option 2</option>
+</select>
+
+<!-- Text Field -->
+<input type="text" ng-model="textField">
+```
+```
+$scope.focusNext = function(event, nextFieldId) {
+    if (event.key === "Enter") { // Detect the Enter key
+        event.preventDefault(); // Prevent the default action
+        document.getElementById(nextFieldId).focus(); // Set focus to the dropdown
+    }
+};
+```
